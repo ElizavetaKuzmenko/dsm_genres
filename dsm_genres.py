@@ -171,6 +171,9 @@ def genreword(word):
         distances_r = sorted(distances.items(), key=operator.itemgetter(1), reverse=True)
         return render_template('home.html', result=associates, word=query.split('_')[0], pos=query.split('_')[-1], distances=distances_r, models=our_models)
     return render_template('home.html')
-
+    
+@genre.route('/embeddings/registers/about/', methods=['GET'])
+def genreabout():
+    return render_template('about.html')
 
 

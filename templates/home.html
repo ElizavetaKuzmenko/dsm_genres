@@ -1,12 +1,17 @@
 {% extends "base.html" %}
 
+{%- block title %}
+     <title>RegisterExplorer: word analysis</title>
+{%- endblock title %}
+      
+
 {% block content %}
     <div class="row">
         <h1>English language registers explorer</h1>
           <p class="lead">powered by word embeddings</p>
 
 	<h2>Word analysis</h2>
-	<p>Type your query word:</p>
+	<p>Type your query word (optionally with part of speech tag):</p>
             <form method=post>
               <div class="form-group">
         {% if word %}
@@ -21,6 +26,24 @@
         <p> {{ error }}</p>
     {% endif %}
      {% if result %}
+               {% if distances %}
+       <div class="row">
+       <h3>Distances between <a href="http://ltr.uio.no/embeddings/registers/word/{{ word+'_'+pos }}"><i>{{word}}</i></a> meaning in particular registers and the whole corpus</h3>
+    <p><i>1 - completely different, 0 - no difference</i></p>
+     <big>
+       <table>
+           {% for key, value in distances %}
+            <tr>
+        <th> The whole BNC vs. {{ models[key] }} </th>
+        <td> &nbsp;{{ "{:.2f} ".format(value) }} </td>
+            </tr>
+{% endfor %}
+       </table>
+       </big>
+       </div>
+         {% endif %}
+
+      
       <h3>Words related to <a href="http://ltr.uio.no/embeddings/registers/word/{{ word+'_'+pos }}"><i>{{word}}</i></a> across different language registers</h3>
         <div class="row">
     {% for model in result %}
@@ -40,22 +63,6 @@
         </div>
     {% endfor %}
         </div>
-         {% if distances %}
-       <div class="row">
-       <h3>Distances between <a href="http://ltr.uio.no/embeddings/registers/word/{{ word+'_'+pos }}"><i>{{word}}</i></a> meaning in particular registers and the whole corpus</h3>
-    <p><i>1 - completely different, 0 - no difference</i></p>
-     <big>
-       <table>
-           {% for key, value in distances %}
-            <tr>
-        <th> The whole BNC vs. {{ models[key] }} </th>
-        <td> &nbsp;&nbsp;{{ "{:.2f} ".format(value) }} </td>
-            </tr>
-{% endfor %}
-       </table>
-       </big>
-       </div>
-         {% endif %}
 {% endif %}
         
      

@@ -1,5 +1,10 @@
 {% extends "base.html" %}
 
+{%- block title %}
+     <title>RegisterExplorer: text analysis</title>
+{%- endblock title %}
+      
+
 {% block content %}
     <div class="row">
         <h1>English language registers explorer</h1>
@@ -26,6 +31,10 @@
     <i>The closer log-likelihood values are to zero, the more probable is the register. For highly probable registers, the font size increases.</i>
     <big>
     <table width="80%">
+    <tr>
+    <td><strong>Register</strong></td>
+    <td><strong>Log-likelihood</strong></td>
+    </tr>
     {% for element in result if element[0] != 'all' %}
     <tr>
     <td><span style="font-size: {{ (element[1]+100)|int }}px;">{{ models[element[0]] }}</span></td><td> {{ "{:.2f} ".format(element[1]) }}</td>

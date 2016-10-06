@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{%- block title %}
+     <title>RegisterExplorer: About</title>
+ {%- endblock title %}
+
+
+
+{% block content %}
+        <h1>About</h1>
+<p><i>RegisterExplorer</i> is a web service to explore words' semantic differences depending on the language registers where they are used. It is also possible to compare register-specific word meaning with its meaning in English in general.</p>
+<blockquote><p><strong>Registers</strong> are text types, styles or 'sublanguages' depending on the communicative situations. We feature models of the following English language registers: 
+<ul>
+<li><i>spoken language</i>, </li>
+<li><i>academic language</i>, </li>
+<li><i>news language</i>, </li>
+<li><i>fiction language</i></li>
+<li><i>popular non-fiction language.</i></li>
+</ul>
+</p></blockquote>
+
+<p>Under the hood of this service are <strong>distributional language models</strong>. They were trained on register-specific slices of the <a href="http://www.natcorp.ox.ac.uk/">British National Corpus</a> (BNC), large and well-established collection of English texts (note: all the texts are older than 1994, so don't try to look for 21st century memes!). Each model corresponds to one register (or the whole BNC), so by comparing word embeddings in different models we compare different registers. You can read about the BNC registers in more detail in the paper by David Lee (see References below).</p>
+<blockquote><p>Distributional models use word co-occurrences data extracted from large corpora to represent semantics of each particular word with dense vectors called <strong>word embeddings</strong>. Words with similar meaning possess similar vectors. This allows to computationally process natural language taking semantics into account.
+We use the well-known <a href="https://en.wikipedia.org/wiki/Word2vec#Skip_grams_and_CBOW">Continuous Bag of Words</a> algorithm developed by Mikolov et al. to train our models.</p>
+</blockquote>
+<p>The resulting models demonstrate semantic specificity of different registers. It can be observed through comparing the lists of nearest semantic associates for a given word in different models.
+You can look for the nearest associates of any word and grasp what this word means in a particular register. For example, the word <i>star</i> means very  different things in a typical newspaper article and in an academic paper.</p>
+<p>Additionally, differences between the associates in different models can be expressed quantitatively. <i>RegisterExplorer</i> will calculate Jaccard distance between all the registers and the model trained on the whole BNC, so that you know in which register the meaning of your query word is most 'exotic'.</p> </p>
+<p>In the <a href="http://ltr.uio.no/embeddings/registers/text">Text analysis</a> tab you can paste your text and find out how likely it is that it was produced within one of the aforementioned registers. For this, we employ the approach called 'deep inverse regression' developed by Matt Taddy. It analyses word sequences and outputs log-likelihood of encountering such sequences in the given models. Thus, one can estimate how strong is the 'expression' of each register in the query text.</p>
+
+<h2>Models</h2>
+<p>Download our models for your own use. Models come in <a href="http://radimrehurek.com/gensim/models/word2vec.html">Gensim</a> format, tar/gzipped.</p>
+    <table class="table">
+        <tr><td>
+        * <strong><a name="bnc">Full British National Corpus</a></strong>
+        <p><a href='http://ltr.uio.no/~andreku/static/BNC/bnc_all.tar.gz'>Download the model</a> (207 Mbytes)</p>
+        </td></tr>
+        <tr><td>
+        * <strong><a name="academic">Academic subcorpus</a></strong>
+        <p><a href='http://ltr.uio.no/~andreku/static/BNC/bnc_academic.tar.gz'>Download the model</a> (108 Mbytes)</p>
+        </td></tr>
+        <tr><td>
+        * <strong><a name="fiction">Fiction subcorpus</a></strong>
+        <p><a href='http://ltr.uio.no/~andreku/static/BNC/bnc_fiction.tar.gz'>Download the model</a> (90 Mbytes)</p>
+        </td></tr>
+        <tr><td>
+        * <strong><a name="news">News subcorpus</a></strong>
+        <p><a href='http://ltr.uio.no/~andreku/static/BNC/bnc_news.tar.gz'>Download the model</a> (109 Mbytes)</p>
+        </td></tr>
+        <tr><td>
+        * <strong><a name="nonAcademic">Popular non-fiction subcorpus</a></strong>
+        <p><a href='http://ltr.uio.no/~andreku/static/BNC/bnc_nonAcademic.tar.gz'>Download the model</a> (143 Mbytes)</p>
+        </td></tr>
+        <tr><td>
+        * <strong><a name="spoken">Spoken subcorpus</a></strong>
+        <p><a href='http://ltr.uio.no/~andreku/static/BNC/bnc_spoken.tar.gz'>Download the model</a> (102 Mbytes)</p>
+        </td></tr>
+    </table>
+
+<h2>References</h2>
+<ol>
+<li>Lee, David. "Genres, Registers, Text Types, Domain, and Styles: Clarifying the Concepts and Navigating a Path through the BNC Jungle", in Language Learning & Technology 5.3 (2001): 37-72.</li>
+<li>Mikolov, Tomas, et al. "Distributed representations of words and phrases and their compositionality", in Advances in neural information processing systems. 2013.</li>
+<li>Taddy, Matt. "Document Classification by Inversion of Distributed Language Representations", in Proceedings of the 2015 Conference of the Association of Computational Linguistics.</li>
+</ol>
+
+
+<h2>Team</h2>
+<p><i>Register Explorer</i> is maintained by <a href="https://www.mn.uio.no/ifi/english/people/aca/andreku/">Andrey Kutuzov</a> (University of Oslo, Norway), Anna Marakasova and <a href="https://hse-ru.academia.edu/ElizavetaKuzmenko">Elizaveta Kuzmenko</a> (National Research University Higher School of Economics, Russia).</p>
+<p>The source code for the service is <a href="https://github.com/ElizavetaKuzmenko/dsm_genres">available here</a> and you are welcome to deploy it with any other set of models trained on text corpora of your choice.
+</p>
+{% endblock %}
