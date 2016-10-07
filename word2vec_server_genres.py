@@ -75,7 +75,7 @@ def find_synonyms(query):
             continue
         # return results, models
         if posfilter == 'ALL':
-            results[model] = [(i[0], i[1]) for i in m.most_similar(positive=q, topn=30) if i[0].split('_')[-1] == pos][
+            results[model] = [(i[0], i[1]) for i in m.most_similar(positive=q, topn=50) if i[0].split('_')[-1] == pos][
                              :10]
         else:
             results[model] = [(i[0], i[1]) for i in m.most_similar(positive=q, topn=20) if

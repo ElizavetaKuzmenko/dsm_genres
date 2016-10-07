@@ -1,19 +1,13 @@
 #!/ltg/python/bin/python2.7
 # coding: utf-8
-import logging
-import hashlib
-import os
-import sys
+import ConfigParser
 import json
-from flask import render_template, Blueprint, redirect, Response
-from flask import request
-import numpy as np
-import gensim
-from collections import OrderedDict
-from tagger import tagsentence, tagword
-
-import ConfigParser, socket
+import logging
 import operator
+import socket
+import sys
+from flask import render_template, Blueprint
+from flask import request
 
 config = ConfigParser.RawConfigParser()
 config.read('dsm_genres.cfg')
@@ -23,19 +17,18 @@ modelsfile = 'models.csv'
 our_models = {}
 for line in open(root + modelsfile, 'r').readlines():
     if line.startswith("#"):
-	continue
+        continue
     res = line.strip().split('\t')
     (identifier, description, path, default) = res
     our_models[identifier] = description
-
 
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
 tags = True
 lemmatize = True
 if lemmatize:
-    from tagger import tagword, tagsentence
-    
+    from tagger import tagword
+
 # Establishing connection to model server
 host = config.get('Sockets', 'host')
 port = config.getint('Sockets', 'port')
@@ -50,28 +43,29 @@ default_tag = 'SUBST'
 taglist = set(config.get('Tags', 'tags_list').split())
 defaulttag = config.get('Tags', 'default_tag')
 
-
 genre = Blueprint('genres', __name__, template_folder='templates')
+
 
 def jaccard(set_1, set_2):
     n = len(set_1 & set_2)
     return n / float(len(set_1) + len(set_2) - n)
 
+
 def process_query(userquery):
-    userquery = userquery.strip()
-    if tags:
-        if '_' in userquery:
-            query_split = userquery.split('_')
-            if query_split[-1] in taglist:
-                query = ''.join(query_split[:-1]).lower() + '_' + query_split[-1]
-            else:
-                return 'Incorrect tag!'
+    query = userquery.strip()
+    if '_' in query:
+        query_split = query.split('_')
+        if query_split[-1] in taglist:
+            query = ''.join(query_split[:-1]).lower() + '_' + query_split[-1]
         else:
-            if lemmatize:
-                query = tagword(userquery)
-            else:
-                return 'Incorrect tag!'
+            return 'Incorrect tag!'
+    else:
+        if lemmatize:
+            query = tagword(query)
+        else:
+            return 'Incorrect tag!'
     return query
+
 
 def serverquery(message):
     # create an INET, STREAMing socket
@@ -84,7 +78,7 @@ def serverquery(message):
     # Connect to remote server
     s.connect((remote_ip, 15666))
     # Now receive data
-    reply = s.recv(1024)
+    s.recv(1024)
 
     # Send some data to remote server
     try:
@@ -99,15 +93,16 @@ def serverquery(message):
     s.close()
     return reply
 
+
 @genre.route('/embeddings/registers/', methods=['GET', 'POST'])
 def genrehome():
     if request.method == 'POST':
-        input_data = 'dummy'
         try:
             input_data = request.form['query']
         except:
-            pass
-        if input_data != 'dummy' and input_data.replace('_', '').replace('-', '').isalnum():
+            print >> sys.stderr, 'Error!'
+            return render_template('home.html', error="Something wrong with your query!")
+        if input_data.replace('_', '').replace('-', '').isalnum():
             query = process_query(input_data)
             if query == 'Incorrect tag!':
                 error = query
@@ -121,20 +116,23 @@ def genrehome():
                 set_1 = set([x[0] for x in associates['all']])
                 set_2 = set([x[0] for x in associates[m]])
                 distance = 1 - jaccard(set_1, set_2)
-                distances[m] = round(distance,2)
+                distances[m] = round(distance, 2)
             distances_r = sorted(distances.items(), key=operator.itemgetter(1))
-            return render_template('home.html', result=associates, word=query.split('_')[0], pos=query.split('_')[-1], distances=distances_r, models=our_models)
+            return render_template('home.html', result=associates, word=query.split('_')[0], pos=query.split('_')[-1],
+                                   distances=distances_r, models=our_models)
     return render_template('home.html')
+
 
 @genre.route('/embeddings/registers/word/<word>/', methods=['GET', 'POST'])
 def genreword(word):
     input_data = word
     if request.method == 'POST':
-	input_data = request.form['query']
+        input_data = request.form['query']
     if input_data.replace('_', '').replace('-', '').isalnum():
-	query = process_query(input_data)
+        query = process_query(input_data)
         if query == 'Incorrect tag!':
-	    error = query
+            error = query
+            print >> sys.stderr, 'Error!'
             return render_template('home.html', error=error)
         message = "1;" + query + ";" + 'ALL'
         associates = json.loads(serverquery(message))
@@ -145,29 +143,33 @@ def genreword(word):
             set_1 = set([x[0] for x in associates['all']])
             set_2 = set([x[0] for x in associates[m]])
             distance = 1 - jaccard(set_1, set_2)
-            distances[m] = round(distance,2)
+            distances[m] = round(distance, 2)
         distances_r = sorted(distances.items(), key=operator.itemgetter(1))
-        return render_template('home.html', result=associates, word=query.split('_')[0], pos=query.split('_')[-1], distances=distances_r, models=our_models)
+        return render_template('home.html', result=associates, word=query.split('_')[0], pos=query.split('_')[-1],
+                               distances=distances_r, models=our_models)
     return render_template('home.html')
+
 
 @genre.route('/embeddings/registers/text/', methods=['GET', 'POST'])
 def genretext():
     if request.method == 'POST':
-        input_data = 'dummy'
         try:
             input_data = request.form['textquery']
         except:
-            pass
-        if input_data != 'dummy':
-            query = input_data.strip().replace('\r\n',' ')
-            message = "2;" + query
-            result = json.loads(serverquery(message))
-            lemmas = result['words']
-            result.pop('words')
-            result.pop('all')
-            ranking = sorted(result.items(), key=operator.itemgetter(1), reverse=True)
-            return render_template('text.html', result=ranking, text=input_data, models=our_models, lemmas=lemmas, tags=taglist)
+            print >> sys.stderr, 'Error!'
+            return render_template('text.html', error="Something wrong with your query!")
+
+        query = input_data.strip().replace('\r\n', ' ')
+        message = "2;" + query
+        result = json.loads(serverquery(message))
+        lemmas = result['words']
+        result.pop('words')
+        result.pop('all')
+        ranking = sorted(result.items(), key=operator.itemgetter(1), reverse=True)
+        return render_template('text.html', result=ranking, text=input_data, models=our_models, lemmas=lemmas,
+                               tags=taglist)
     return render_template('text.html')
+
 
 @genre.route('/embeddings/registers/about/', methods=['GET'])
 def genreabout():
