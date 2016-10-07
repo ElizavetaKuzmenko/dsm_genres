@@ -65,16 +65,17 @@
         <div class="col-md-4">
         <h4><strong>{{ models[model] }}</strong></h4>
         <ol>
-        {% for res in result[model] if not "No results" in res and res != "Incorrect tag!" and not 'unknown' in res  %}
+        {% for res in result[model] if not "No results" in res and res != "Incorrect tag!" and not 'is unknown' in res  %}
         <li>
         <a href="http://ltr.uio.no/embeddings/registers/word/{{ res[0] }}">{{ res[0].split('_')[0] }}</a> <small><i>{{ "{:.4f} ".format(res[1]) }}</i></small>
         </li>
         {% endfor %}
+        </ol>
         {% if 'is unknown' in result[model][0] %}
         <i>{{ result[model][0] }}</i>
         
         {% endif %}
-        </ol>
+        
         </div>
     {% endfor %}
     </div>
@@ -83,15 +84,16 @@
         <big>
         <h4><strong>General English</strong></h4>
         <ol>
-        {% for res in result['all'] if not "No results" in res and res != "Incorrect tag!" and not 'unknown' in res  %}
+        {% for res in result['all'] if not "No results" in res and res != "Incorrect tag!" and not 'is unknown' in res  %}
         <li>
         <a href="http://ltr.uio.no/embeddings/registers/word/{{ res[0] }}">{{ res[0].split('_')[0] }}</a> <small><i>{{ "{:.4f} ".format(res[1]) }}</i></small>
         </li>
         {% endfor %}
-        {% if 'is unknown' in result['all'][0] %}
-        <i>{{ result[model][0] }}</i>
-        {% endif %}
         </ol>
+        {% if 'is unknown' in result['all'][0] %}
+        <i>{{ result['all'][0] }}</i>
+        {% endif %}
+        
         </big>
         </div>
     </div>
