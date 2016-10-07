@@ -164,6 +164,7 @@ def genretext():
             result = json.loads(serverquery(message))
             lemmas = result['words']
             result.pop('words')
+            result.pop('all')
             ranking = sorted(result.items(), key=operator.itemgetter(1), reverse=True)
             return render_template('text.html', result=ranking, text=input_data, models=our_models, lemmas=lemmas, tags=taglist)
     return render_template('text.html')

@@ -7,8 +7,10 @@
 
 {% block content %}
     <div class="row">
+        {% if not result %}
         <h1>English language registers explorer</h1>
           <p class="lead">powered by word embeddings</p>
+        {% endif %}
 	<h2>Text analysis</h2>
 	<p>Enter a single English sentence or a small text:</p>
             
@@ -16,9 +18,9 @@
             <form method=post id="textquery">
               <div class="form-group">
     {% if text %}
-        <textarea form ="textquery" name="textquery" id="textquery" cols="45" rows=8 wrap="soft" required placeholder="{{ text }}" maxlength=10000></textarea>
+        <textarea form ="textquery" name="textquery" id="textquery" cols="45" rows=5 wrap="soft" required placeholder="{{ text }}" maxlength=10000></textarea>
         {% else %}
-        <textarea form ="textquery" name="textquery" id="textquery" cols="45" rows=8 wrap="soft" required placeholder="Informant filled in the questionnaire." maxlength=10000></textarea>
+        <textarea form ="textquery" name="textquery" id="textquery" cols="45" rows=5 wrap="soft" required placeholder="Informant filled in the questionnaire." maxlength=10000></textarea>
         {% endif %}
       </div>
       <button type="submit" class="btn btn-primary" name="textquery" value = "analyze">Analyze</button>
@@ -27,9 +29,31 @@
         <p> {{ error }}</p>
     {% endif %}
      {% if result %}
-      <h3>Language registers likelihood to produce this text (ranked by decreasing probability):</h3>
-    <i>The closer log-likelihood values are to zero, the more probable is the register. For highly probable registers, the font size increases.</i>
-    <big>
+      <h3>Language registers likelihood to produce this text</h3>
+      <p><i>Ranked by decreasing probability, normalized</i></p>
+    
+    <canvas id="distances"></canvas>
+    <script src="http://ltr.uio.no/~andreku/dist/js/html5-canvas-bar-graph.js"></script>
+    <script>
+        var ctx = document.getElementById("distances").getContext("2d");
+        var graph = new BarGraph(ctx);
+        graph.colors=["red","green","yellow","blue","cyan"];
+        graph.margin = 4;
+        graph.width = 450;
+        graph.height = 150;
+        graph.xAxisLabelArr = [
+        {% for el in result  %}
+	    "{{ models[el[0]] }}",
+        {% endfor %}
+        ];
+        graph.update([
+        {% for el in result%}
+	    {{ "{:.2f} ".format(100/(el[1]|abs)) }},
+        {% endfor %}
+	]);
+    </script>
+    <h3>Raw log-likelihood values</h3>
+    <p><i>The closer to zero, the more probable is the register.</i></p>
     <table width="80%">
     <tr>
     <td><strong>Register</strong></td>
@@ -37,14 +61,14 @@
     </tr>
     {% for element in result if element[0] != 'all' %}
     <tr>
-    <td><span style="font-size: {{ (element[1]+100)|int }}px;">{{ models[element[0]] }}</span></td><td> {{ "{:.2f} ".format(element[1]) }}</td>
+    <td>{{ models[element[0]] }}</td><td> {{ "{:.2f} ".format(element[1]) }}</td>
     </tr>
     {% endfor %}
     </table>
-    </big>
-    <h3>Explore words in your text (only content words are shown):</h3>
-    <p>{{ text|wordcount }} words in total</p>
     
+                                                                                                                                                
+    <h3>Explore words in your text</h3>
+    <p><i>only content words are shown, {{ text|wordcount }} words in total</i></p>
     {% for sentence in lemmas %}
     {% for lemma in sentence if lemma.split('_')[-1] in tags %}
     <a href="http://ltr.uio.no/embeddings/registers/word/{{ lemma }}" title="Explore {{ lemma }} across registers" alt="Explore {{ lemma }} across registers">{{ lemma }}</a>

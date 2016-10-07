@@ -57,7 +57,7 @@
        </div>
          {% endif %}
 
-      <h3>Words related to <a href="http://ltr.uio.no/embeddings/registers/word/{{ word+'_'+pos }}"><i>{{word}}</i></a> across different language registers</h3>
+      <h3>Words related to <a href="http://ltr.uio.no/embeddings/registers/word/{{ word+'_'+pos }}"><i>{{word}}</i></a> <small>({{ pos }})</small> across different language registers</h3>
       <p><i>(with cosine similarities)</i></p>
 <div class="row">
     <div class="col-md-7">
@@ -79,7 +79,7 @@
     {% endfor %}
     </div>
     <div class="col-md-5">
-        <div style="text-align:right;">
+        <div style="position: relative; left:30%;">
         <big>
         <h4><strong>General English</strong></h4>
         <ol>
