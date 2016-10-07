@@ -8,6 +8,7 @@ import socket
 import sys
 from thread import *
 
+import gzip
 import gensim
 import logging
 import numpy as np
@@ -43,6 +44,12 @@ for mod in our_models:
         models_dic[mod] = gensim.models.Word2Vec.load(our_models[mod])
     print >> sys.stderr, "Model", mod, "from file", our_models[mod], "loaded successfully."
 
+# Loading concordance data
+
+data = gzip.open(root+'data/total_concordance.json.gz','r')
+concordance_data = json.loads(data.read())
+data.close()
+print >> sys.stderr, 'Concordance loaded from', root+'data/total_concordance.json.gz'
 
 # Vector functions
 
@@ -73,7 +80,6 @@ def find_synonyms(query):
         if noresults:
             results[model] = [q + " is unknown to the model"]
             continue
-        # return results, models
         if posfilter == 'ALL':
             results[model] = [(i[0], i[1]) for i in m.most_similar(positive=q, topn=50) if i[0].split('_')[-1] == pos][
                              :10]
@@ -85,7 +91,6 @@ def find_synonyms(query):
 
 def classify(text):
     text = text[0].strip()
-    # text = text.decode('utf-8','replace')
     sentences = tagsentence(text.encode('ascii', 'replace'))
     results = {}
     for model in models_dic:
@@ -97,8 +102,15 @@ def classify(text):
     results['words'] = sentences
     return results
 
+def concordance(word):
+    word = word[0]
+    if word in concordance_data:
+        return concordance_data[word]
+    else:
+        return {'Error': 'Word not it concordance data'}
 
-operations = {'1': find_synonyms, '2': classify}
+
+operations = {'1': find_synonyms, '2': classify, '3': concordance}
 
 # Bind socket to local host and port
 
@@ -128,15 +140,14 @@ def clientthread(conn, addr):
         # Receiving from client
         data = conn.recv(1024)
         data = data.decode("utf-8")
-        query = data.split(";")
-        output = operations[query[0]]((query[1:]))
         if not data:
             break
+        query = data.split(";")
+        output = operations[query[0]]((query[1:]))
         now = datetime.datetime.now()
         print >> sys.stderr, now.strftime("%Y-%m-%d %H:%M"), '\t', addr[0] + ':' + str(addr[1]), '\t', data
-        if query[0] == "1" or query[0] == "2":
-            reply = json.dumps(output)
-            conn.sendall(reply.encode('utf-8'))
+        reply = json.dumps(output)
+        conn.sendall(reply.encode('utf-8'))
         break
 
     # came out of loop

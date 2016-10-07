@@ -64,6 +64,7 @@
     {% for model in result if model != 'all' %}
         <div class="col-md-4">
         <h4><strong>{{ models[model] }}</strong></h4>
+        <p><i><a href="http://ltr.uio.no/embeddings/registers/concordance/{{ word+'_'+pos }}/{{ model }}" target="_blank">(concordance)</a></i></p>
         <ol>
         {% for res in result[model] if not "No results" in res and res != "Incorrect tag!" and not 'is unknown' in res  %}
         <li>

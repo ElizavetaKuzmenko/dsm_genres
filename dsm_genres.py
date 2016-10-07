@@ -150,6 +150,20 @@ def genreword(word):
     return render_template('home.html')
 
 
+@genre.route('/embeddings/registers/concordance/<word>/<register>/', methods=['GET'])
+def genreconcordance(word, register):
+    if word.replace('_', '').replace('-', '').isalnum():
+        message = "3;" + word.strip().encode('utf-8')
+        sentences = json.loads(serverquery(message))
+        if not 'Error' in sentences:
+            result = sentences[register]
+            return render_template('concordance.html', result=result, word=word, register=register)
+        else:
+            error = sentences['Error']
+            return render_template('concordance.html', error=error)
+
+
+
 @genre.route('/embeddings/registers/text/', methods=['GET', 'POST'])
 def genretext():
     if request.method == 'POST':

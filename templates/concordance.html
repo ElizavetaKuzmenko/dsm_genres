@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{%- block title %}
+     <title>RegisterExplorer: concordance</title>
+{%- endblock title %}
+
+{% block content %}
+    <div class="row">
+	<h2>Concordance for {{ word }} in {{ register }} texts</h2>
+	<p><i>10 random sentences, lemmatized</i></p>
+	{% if result %}
+	<ul>
+	{% for sentence in result  %}
+        
+        <li>{% for token in sentence %}
+        {% if token == word%}
+        <strong>{{ token.split('_')[0] }}</strong>
+        {% else %}
+        {{ token.split('_')[0] }}
+        {% endif %}
+        {% endfor %}</li>
+        {% endfor %}
+        </ul>
+        {% endif %}
+        
+        {% if error %}
+        {{ error }}
+        {% endif %}
+        
+        </div>
+
+{% endblock %}

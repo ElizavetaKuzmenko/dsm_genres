@@ -66,6 +66,7 @@ conversion = {"CC": "CONJ",
               "WRB": "ADV",
               "UH": "INTERJ"}
 
+days = set(['tomorrow', 'today', 'yesterday'])
 
 def tagsentence(sentence):
     tagged = requests.post(
@@ -81,6 +82,8 @@ def tagsentence(sentence):
 	    pos = token['pos']
 	    if pos in conversion:
 		pos = conversion[pos]
+	    if lemma in days:
+	        pos = 'ADV'
 	    lemmas.append(lemma + '_' + pos)
 	all_lemmas.append(lemmas)
     return all_lemmas
