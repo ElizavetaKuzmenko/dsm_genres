@@ -1,2 +1,2 @@
 # dsm_genres
-Visualizer for genres based on neural network language models
+Language registers explorer powered by word embeddings.
