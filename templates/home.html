@@ -7,9 +7,11 @@
 
 {% block content %}
     <div class="row">
+        {% if not result %}
         <h1>English language registers explorer</h1>
           <p class="lead">powered by word embeddings</p>
-
+	{% endif %}
+	
 	<h2>Word analysis</h2>
 	<p>Type your query word (optionally with part of speech tag):</p>
             <form method=post>
@@ -28,26 +30,39 @@
      {% if result %}
                {% if distances %}
        <div class="row">
-       <h3>Distances between <a href="http://ltr.uio.no/embeddings/registers/word/{{ word+'_'+pos }}"><i>{{word}}</i></a> meaning in particular registers and the whole corpus</h3>
-    <p><i>1 - completely different, 0 - no difference</i></p>
-     <big>
-       <table>
-           {% for key, value in distances %}
-            <tr>
-        <th> The whole BNC vs. {{ models[key] }} </th>
-        <td> &nbsp;{{ "{:.2f} ".format(value) }} </td>
-            </tr>
-{% endfor %}
-       </table>
-       </big>
+       <h3>Distances between <a href="http://ltr.uio.no/embeddings/registers/word/{{ word+'_'+pos }}"><i>{{word}}</i></a> meaning in particular registers and general English</h3>
+	<p><i>General English is represented by the model trained on the whole <a href="http://www.natcorp.ox.ac.uk/">British National Corpus</a> (BNC)</i></p>
+	<p><i>Distances take values from <strong>0</strong> (the word is used in the mainstream meaning in this register) to <strong>1</strong> (the word is used in a completely different meaning compared to the language in general)</i></p>
+       <canvas id="distances"></canvas>
+       <script src="http://ltr.uio.no/~andreku/dist/js/html5-canvas-bar-graph.js"></script>
+       <script>
+       var ctx = document.getElementById("distances").getContext("2d");
+       var graph = new BarGraph(ctx);
+       graph.maxValue=1;
+       graph.colors=["red","green","yellow","blue","cyan"];
+       graph.margin = 4;
+       graph.width = 450;
+       graph.height = 150;
+       graph.xAxisLabelArr = [
+       {% for el in distances%}
+       "{{ models[el[0]] }}",
+       {% endfor %}
+       ];
+       graph.update([
+       {% for el in distances%}
+       {{ el[1] }},
+       {% endfor %}
+       ]);
+       </script>
        </div>
          {% endif %}
 
-      
       <h3>Words related to <a href="http://ltr.uio.no/embeddings/registers/word/{{ word+'_'+pos }}"><i>{{word}}</i></a> across different language registers</h3>
-        <div class="row">
-    {% for model in result %}
-        <div class="col-md-3">
+      <p><i>(with cosine similarities)</i></p>
+<div class="row">
+    <div class="col-md-7">
+    {% for model in result if model != 'all' %}
+        <div class="col-md-4">
         <h4><strong>{{ models[model] }}</strong></h4>
         <ol>
         {% for res in result[model] if not "No results" in res and res != "Incorrect tag!" and not 'unknown' in res  %}
@@ -62,7 +77,26 @@
         </ol>
         </div>
     {% endfor %}
+    </div>
+    <div class="col-md-5">
+        <div style="text-align:right;">
+        <big>
+        <h4><strong>General English</strong></h4>
+        <ol>
+        {% for res in result['all'] if not "No results" in res and res != "Incorrect tag!" and not 'unknown' in res  %}
+        <li>
+        <a href="http://ltr.uio.no/embeddings/registers/word/{{ res[0] }}">{{ res[0].split('_')[0] }}</a> <small><i>{{ "{:.4f} ".format(res[1]) }}</i></small>
+        </li>
+        {% endfor %}
+        {% if 'is unknown' in result['all'][0] %}
+        <i>{{ result[model][0] }}</i>
+        {% endif %}
+        </ol>
+        </big>
         </div>
+    </div>
+</div>
+
 {% endif %}
         
      

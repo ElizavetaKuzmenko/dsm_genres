@@ -1,14 +1,19 @@
 #!/usr/local/python/bin/python2.7
 # coding: utf-8
 
-import socket, json
-import sys, datetime
+import ConfigParser
+import datetime
+import json
+import socket
+import sys
 from thread import *
-import sys, gensim, logging
-from tagger import tagword, tagsentence
+
+import gensim
+import logging
 import numpy as np
 
-import ConfigParser
+from tagger import tagsentence
+
 config = ConfigParser.RawConfigParser()
 config.read('dsm_genres.cfg')
 
@@ -18,7 +23,6 @@ PORT = config.getint('Sockets', 'port')  # Arbitrary non-privileged port
 tags = config.getboolean('Tags', 'use_tags')
 
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
-
 
 # Loading models
 
@@ -32,12 +36,13 @@ for line in open(root + config.get('Files and directories', 'models'), 'r').read
 
 models_dic = {}
 
-for m in our_models:
-    if our_models[m].endswith('.bin.gz'):
-        models_dic[m] = gensim.models.Word2Vec.load_word2vec_format(our_models[m], binary=True)
+for mod in our_models:
+    if our_models[mod].endswith('.bin.gz'):
+        models_dic[mod] = gensim.models.Word2Vec.load_word2vec_format(our_models[mod], binary=True)
     else:
-        models_dic[m] = gensim.models.Word2Vec.load(our_models[m])
-    print >> sys.stderr, "Model", m, "from file", our_models[m], "loaded successfully."
+        models_dic[mod] = gensim.models.Word2Vec.load(our_models[mod])
+    print >> sys.stderr, "Model", mod, "from file", our_models[mod], "loaded successfully."
+
 
 # Vector functions
 
@@ -48,7 +53,8 @@ def find_synonyms(query):
     pos = q.split('_')[-1]
     for model in models_dic:
         m = models_dic[model]
-        if not q in m:
+        noresults = False
+        if q not in m:
             candidates_set = set()
             candidates_set.add(q.upper())
             if tags:
@@ -64,22 +70,22 @@ def find_synonyms(query):
                     q = candidate
                     noresults = False
                     break
-	    if noresults == True:
-		results[model] = [q + " is unknown to the model"]
-		continue
-        	#return results, models
-	if posfilter == 'ALL':
-	    #results[model] = [i[0] + "#" + str(i[1]) for i in m.most_similar(positive=q, topn=10)]
-	    results[model] = [(i[0], i[1]) for i in m.most_similar(positive=q, topn=30) if i[0].split('_')[-1] == pos][:10]
-	else:
-	    results[model] = [(i[0], i[1]) for i in m.most_similar(positive=q, topn=20) if i[0].split('_')[-1] == posfilter][:10]
-        #if len(results) == 0:
-        #    results[model] = ('No results')
+        if noresults:
+            results[model] = [q + " is unknown to the model"]
+            continue
+        # return results, models
+        if posfilter == 'ALL':
+            results[model] = [(i[0], i[1]) for i in m.most_similar(positive=q, topn=30) if i[0].split('_')[-1] == pos][
+                             :10]
+        else:
+            results[model] = [(i[0], i[1]) for i in m.most_similar(positive=q, topn=20) if
+                              i[0].split('_')[-1] == posfilter][:10]
     return results
+
 
 def classify(text):
     text = text[0].strip()
-    #text = text.decode('utf-8','replace')
+    # text = text.decode('utf-8','replace')
     sentences = tagsentence(text.encode('ascii', 'replace'))
     results = {}
     for model in models_dic:
@@ -90,6 +96,7 @@ def classify(text):
         results[model] = sc
     results['words'] = sentences
     return results
+
 
 operations = {'1': find_synonyms, '2': classify}
 
@@ -106,21 +113,22 @@ except socket.error, msg:
 
 print >> sys.stderr, 'Socket bind complete'
 
-#Start listening on socket
+# Start listening on socket
 s.listen(100)
 print >> sys.stderr, 'Socket now listening on port', PORT
 
-#Function for handling connections. This will be used to create threads
-def clientthread(conn, addr):
-    #Sending message to connected client
-    conn.send('word2vec model server')  #send only takes string
 
-    #infinite loop so that function do not terminate and thread do not end.
+# Function for handling connections. This will be used to create threads
+def clientthread(conn, addr):
+    # Sending message to connected client
+    conn.send('word2vec model server')  # send only takes string
+
+    # infinite loop so that function do not terminate and thread do not end.
     while True:
-        #Receiving from client
+        # Receiving from client
         data = conn.recv(1024)
         data = data.decode("utf-8")
-	query = data.split(";")
+        query = data.split(";")
         output = operations[query[0]]((query[1:]))
         if not data:
             break
@@ -131,15 +139,17 @@ def clientthread(conn, addr):
             conn.sendall(reply.encode('utf-8'))
         break
 
-    #came out of loop
+    # came out of loop
     conn.close()
 
-#now keep talking with the client
-while 1:
-    #wait to accept a connection - blocking call
-    conn, addr = s.accept()
 
-    #start new thread takes 1st argument as a function name to be run, second is the tuple of arguments to the function.
-    start_new_thread(clientthread, (conn, addr))
+# now keep talking with the client
+while 1:
+    # wait to accept a connection - blocking call
+    connection, address = s.accept()
+
+    # start new thread takes 1st argument as a function name to be run,
+    # second is the tuple of arguments to the function.
+    start_new_thread(clientthread, (connection, address))
 
 s.close()

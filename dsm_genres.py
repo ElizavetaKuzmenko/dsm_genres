@@ -121,9 +121,33 @@ def genrehome():
                 set_1 = set([x[0] for x in associates['all']])
                 set_2 = set([x[0] for x in associates[m]])
                 distance = 1 - jaccard(set_1, set_2)
-                distances[m] = distance
-            distances_r = sorted(distances.items(), key=operator.itemgetter(1), reverse=True)
+                distances[m] = round(distance,2)
+            distances_r = sorted(distances.items(), key=operator.itemgetter(1))
             return render_template('home.html', result=associates, word=query.split('_')[0], pos=query.split('_')[-1], distances=distances_r, models=our_models)
+    return render_template('home.html')
+
+@genre.route('/embeddings/registers/word/<word>/', methods=['GET', 'POST'])
+def genreword(word):
+    input_data = word
+    if request.method == 'POST':
+	input_data = request.form['query']
+    if input_data.replace('_', '').replace('-', '').isalnum():
+	query = process_query(input_data)
+        if query == 'Incorrect tag!':
+	    error = query
+            return render_template('home.html', error=error)
+        message = "1;" + query + ";" + 'ALL'
+        associates = json.loads(serverquery(message))
+        distances = {}
+        for m in our_models:
+            if m == 'all':
+                continue
+            set_1 = set([x[0] for x in associates['all']])
+            set_2 = set([x[0] for x in associates[m]])
+            distance = 1 - jaccard(set_1, set_2)
+            distances[m] = round(distance,2)
+        distances_r = sorted(distances.items(), key=operator.itemgetter(1))
+        return render_template('home.html', result=associates, word=query.split('_')[0], pos=query.split('_')[-1], distances=distances_r, models=our_models)
     return render_template('home.html')
 
 @genre.route('/embeddings/registers/text/', methods=['GET', 'POST'])
@@ -144,36 +168,6 @@ def genretext():
             return render_template('text.html', result=ranking, text=input_data, models=our_models, lemmas=lemmas, tags=taglist)
     return render_template('text.html')
 
-@genre.route('/embeddings/registers/word/<word>/', methods=['GET', 'POST'])
-def genreword(word):
-    if request.method == 'POST':
-        input_data = 'dummy'
-        try:
-            input_data = request.form['query']
-        except:
-            pass
-    input_data = word
-    if input_data != 'dummy' and input_data.replace('_', '').replace('-', '').isalnum():
-	query = process_query(input_data)
-        if query == 'Incorrect tag!':
-	    error = query
-            return render_template('home.html', error=error)
-        message = "1;" + query + ";" + 'ALL'
-        associates = json.loads(serverquery(message))
-        distances = {}
-        for m in our_models:
-            if m == 'all':
-                continue
-            set_1 = set([x[0] for x in associates['all']])
-            set_2 = set([x[0] for x in associates[m]])
-            distance = 1 - jaccard(set_1, set_2)
-            distances[m] = distance
-        distances_r = sorted(distances.items(), key=operator.itemgetter(1), reverse=True)
-        return render_template('home.html', result=associates, word=query.split('_')[0], pos=query.split('_')[-1], distances=distances_r, models=our_models)
-    return render_template('home.html')
-    
 @genre.route('/embeddings/registers/about/', methods=['GET'])
 def genreabout():
     return render_template('about.html')
-
-
