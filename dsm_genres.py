@@ -8,6 +8,7 @@ import socket
 import sys
 from flask import render_template, Blueprint
 from flask import request
+from sparql import getdbpediaimage
 
 config = ConfigParser.RawConfigParser()
 config.read('dsm_genres.cfg')
@@ -110,16 +111,24 @@ def genrehome():
             message = "1;" + query + ";" + 'ALL'
             associates = json.loads(serverquery(message))
             distances = {}
+            images = {}
+            images[query.split('_')[0]] = None
             for m in our_models:
                 if m == 'all':
                     continue
                 set_1 = set([x[0] for x in associates['all']])
                 set_2 = set([x[0] for x in associates[m]])
+                for word in set_2:
+                    images[word.split('_')[0]] = None
                 distance = 1 - jaccard(set_1, set_2)
                 distances[m] = round(distance, 2)
             distances_r = sorted(distances.items(), key=operator.itemgetter(1))
+            for w in images:
+                image = getdbpediaimage(w.encode('utf-8'))
+                if image:
+                    images[w] = image
             return render_template('home.html', result=associates, word=query.split('_')[0], pos=query.split('_')[-1],
-                                   distances=distances_r, models=our_models)
+                                   distances=distances_r, models=our_models, wordimages=images)
     return render_template('home.html')
 
 
@@ -137,16 +146,24 @@ def genreword(word):
         message = "1;" + query + ";" + 'ALL'
         associates = json.loads(serverquery(message))
         distances = {}
+        images = {}
+        images[query.split('_')[0]] = None
         for m in our_models:
             if m == 'all':
                 continue
             set_1 = set([x[0] for x in associates['all']])
             set_2 = set([x[0] for x in associates[m]])
+            for word in set_2:
+                images[word.split('_')[0]] = None
             distance = 1 - jaccard(set_1, set_2)
             distances[m] = round(distance, 2)
         distances_r = sorted(distances.items(), key=operator.itemgetter(1))
+        for w in images:
+            image = getdbpediaimage(w.encode('utf-8'))
+            if image:
+                images[w] = image
         return render_template('home.html', result=associates, word=query.split('_')[0], pos=query.split('_')[-1],
-                               distances=distances_r, models=our_models)
+                               distances=distances_r, models=our_models, wordimages=images)
     return render_template('home.html')
 
 
@@ -157,7 +174,17 @@ def genreconcordance(word, register):
         sentences = json.loads(serverquery(message))
         if not 'Error' in sentences:
             result = sentences[register]
-            return render_template('concordance.html', result=result, word=word, register=register, models=our_models)
+            result2 = []
+            for sentence in result:
+                position = sentence.index(word)
+                if position < 5:
+                    add = ['...'] * (5-position)
+                    sentence = add + sentence
+                    position = sentence.index(word)
+                newsentence = sentence[position-5:position+5]
+                newsentence = ['...']+newsentence+['...']
+                result2.append(newsentence)
+            return render_template('concordance.html', result=result2, word=word, register=register, models=our_models)
         else:
             error = sentences['Error']
             return render_template('concordance.html', error=error)

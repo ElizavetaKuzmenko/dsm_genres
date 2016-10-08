@@ -29,7 +29,12 @@
     {% endif %}
      {% if result %}
                {% if distances %}
-       <div class="row">
+     {% if wordimages[word]  %}
+<div class="avatar">
+    <a href="https://en.wikipedia.org/wiki/{{ word }}" target="_blank"><img align="right" src = '{{ wordimages[word] }}' alt = "{{word }} in Wikipedia" title = "{{word }} in Wikipedia" width="150"></a>
+</div>
+      {% endif %}
+           
        <h3>Distances between <a href="http://ltr.uio.no/embeddings/registers/word/{{ word+'_'+pos }}"><i>{{word}}</i></a> meaning in particular registers and general English</h3>
 	<p><i>General English is represented by the model trained on the whole <a href="http://www.natcorp.ox.ac.uk/">British National Corpus</a> (BNC)</i></p>
 	<p><i>Distances take values from <strong>0</strong> (the word is used in the mainstream meaning in this register) to <strong>1</strong> (the word is used in a completely different meaning compared to the language in general)</i></p>
@@ -54,21 +59,24 @@
        {% endfor %}
        ]);
        </script>
-       </div>
          {% endif %}
 
       <h3>Words related to <a href="http://ltr.uio.no/embeddings/registers/word/{{ word+'_'+pos }}"><i>{{word}}</i></a> <small>({{ pos }})</small> across different language registers</h3>
-      <p><i>(with cosine similarities)</i></p>
 <div class="row">
     <div class="col-md-7">
     {% for model in result if model != 'all' %}
         <div class="col-md-4">
         <h4><strong>{{ models[model] }}</strong></h4>
-        <p><i><a href="http://ltr.uio.no/embeddings/registers/concordance/{{ word+'_'+pos }}/{{ model }}" target="_blank">(concordance)</a></i></p>
+        <p><i><a href="http://ltr.uio.no/embeddings/registers/concordance/{{ word+'_'+pos }}/{{ model }}" target="_blank">(examples of usage)</a></i></p>
         <ol>
         {% for res in result[model] if not "No results" in res and res != "Incorrect tag!" and not 'is unknown' in res  %}
-        <li>
-        <a href="http://ltr.uio.no/embeddings/registers/word/{{ res[0] }}">{{ res[0].split('_')[0] }}</a> <small><i>{{ "{:.4f} ".format(res[1]) }}</i></small>
+        <li style='margin: 10px 0;'>
+        <big><a href="http://ltr.uio.no/embeddings/registers/word/{{ res[0] }}">{{ res[0].split('_')[0] }}</a></big>
+        {% if wordimages[res[0].split('_')[0]]  %}
+	    <div class="avataricon">
+		<a href="https://en.wikipedia.org/wiki/{{ res[0].split('_')[0] }}" target="_blank"><img src = '{{ wordimages[res[0].split('_')[0]] }}' alt = "{{res[0].split('_')[0]|capitalize }} in Wikipedia" title = "{{ res[0].split('_')[0]|capitalize }} in Wikipedia" width="30"></a>
+	    </div>
+      {% endif %}
         </li>
         {% endfor %}
         </ol>
@@ -87,7 +95,7 @@
         <ol>
         {% for res in result['all'] if not "No results" in res and res != "Incorrect tag!" and not 'is unknown' in res  %}
         <li>
-        <a href="http://ltr.uio.no/embeddings/registers/word/{{ res[0] }}">{{ res[0].split('_')[0] }}</a> <small><i>{{ "{:.4f} ".format(res[1]) }}</i></small>
+        <strong><a href="http://ltr.uio.no/embeddings/registers/word/{{ res[0] }}">{{ res[0].split('_')[0] }}</a></strong>
         </li>
         {% endfor %}
         </ol>
