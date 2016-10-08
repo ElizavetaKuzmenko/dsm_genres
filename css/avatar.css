@@ -15,21 +15,21 @@ border-radius: 50%; /* читай выше */
 }
 
 
-.avataricon{ /* селектор для класса avatar */
-float: right; /* прижимаемся к левому краю, обтекание справа */
-width: 30px; /* ширина */
-height: 30px; /* высота */
-padding: 0px; /* внутренние отступы(верх, право, низ, лево) */
-border: 0px solid #999; /* граница(ширина, тип, цвет) */
-border-radius: 50%; /*скругление равно 50 процентам от общей ширины, фактически 25 пикселей, вот и круг получили(ещё есть с префиксом -moz и -o) */
+.avataricon{
+float: right;
+width: 30px;
+height: 30px;
+padding: 0px;
+border: 0px solid #999;
+border-radius: 50%;
 ovverflow: hidden;
 }
-.avataricon img{ /* селектор для картинки, которая "внутри" класса avatar */
-display: inline; /* картинка выводится как блок, по ширине будет равен родителю(диву в котором находится) */
-width: 30px; /* ширина 100% */
+.avataricon img{
+display: inline;
+width: 30px;
 height: 30px;
-border: 0; /* граница нулевая */
-margin: 0; /* внешний отступ отстутствует */
-border-radius: 50%; /* читай выше */
+border: 0;
+margin: 0;
+border-radius: 50%;
 overflow: hidden;
 }
