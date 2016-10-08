@@ -6,7 +6,7 @@
 
 {% block content %}
     <div class="row">
-	<h2>Concordance for {{ word }} in {{ register }} texts</h2>
+	<h2>Concordance for <strong><i>{{ word }}</i></strong> in {{ models[register] }} texts</h2>
 	<p><i>10 random sentences, lemmatized</i></p>
 	{% if result %}
 	<ul>

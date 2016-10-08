@@ -157,7 +157,7 @@ def genreconcordance(word, register):
         sentences = json.loads(serverquery(message))
         if not 'Error' in sentences:
             result = sentences[register]
-            return render_template('concordance.html', result=result, word=word, register=register)
+            return render_template('concordance.html', result=result, word=word, register=register, models=our_models)
         else:
             error = sentences['Error']
             return render_template('concordance.html', error=error)
