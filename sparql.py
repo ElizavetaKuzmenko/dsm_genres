@@ -13,17 +13,9 @@ root = config.get('Files and directories', 'root')
 cachefile = config.get('Files and directories', 'image_cache')
 
 
-def getdbpediaimage(query):
+def getdbpediaimage(query, cache):
     query = query.decode('utf-8')
     query = query.capitalize()
-
-    cache = {}
-    data = codecs.open(root + cachefile, 'r', 'utf-8')
-    for line in data:
-        res = line.strip().split('\t')
-        (word, image) = res
-        cache[word.strip()] = image.strip()
-    data.close()
 
     if query in cache:
         return cache[query]

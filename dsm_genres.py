@@ -9,6 +9,7 @@ import sys
 from flask import render_template, Blueprint
 from flask import request
 from sparql import getdbpediaimage
+import codecs
 
 config = ConfigParser.RawConfigParser()
 config.read('dsm_genres.cfg')
@@ -43,6 +44,7 @@ except socket.gaierror:
 default_tag = 'SUBST'
 taglist = set(config.get('Tags', 'tags_list').split())
 defaulttag = config.get('Tags', 'default_tag')
+cachefile = config.get('Files and directories', 'image_cache')
 
 genre = Blueprint('genres', __name__, template_folder='templates')
 
@@ -123,8 +125,15 @@ def genrehome():
                 distance = 1 - jaccard(set_1, set_2)
                 distances[m] = round(distance, 2)
             distances_r = sorted(distances.items(), key=operator.itemgetter(1))
+            imagecache = {}
+            imagedata = codecs.open(root + cachefile, 'r', 'utf-8')
+            for line in imagedata:
+                res = line.strip().split('\t')
+                (word, image) = res
+                imagecache[word.strip()] = image.strip()
+            imagedata.close()
             for w in images:
-                image = getdbpediaimage(w.encode('utf-8'))
+                image = getdbpediaimage(w.encode('utf-8'), imagecache)
                 if image:
                     images[w] = image
             return render_template('home.html', result=associates, word=query.split('_')[0], pos=query.split('_')[-1],
@@ -158,8 +167,15 @@ def genreword(word):
             distance = 1 - jaccard(set_1, set_2)
             distances[m] = round(distance, 2)
         distances_r = sorted(distances.items(), key=operator.itemgetter(1))
+        imagecache = {}
+        imagedata = codecs.open(root + cachefile, 'r', 'utf-8')
+        for line in imagedata:
+            res = line.strip().split('\t')
+            (word, image) = res
+            imagecache[word.strip()] = image.strip()
+        imagedata.close()
         for w in images:
-            image = getdbpediaimage(w.encode('utf-8'))
+            image = getdbpediaimage(w.encode('utf-8'), imagecache)
             if image:
                 images[w] = image
         return render_template('home.html', result=associates, word=query.split('_')[0], pos=query.split('_')[-1],

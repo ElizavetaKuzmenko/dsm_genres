@@ -1,7 +1,13 @@
 {% extends "base.html" %}
 
 {%- block title %}
+     {% if word %}
+     <title>RegisterExplorer: {{ word }}</title>
+     {% else %}
      <title>RegisterExplorer: word analysis</title>
+     {% endif %}
+     
+     
 {%- endblock title %}
       
 
@@ -36,7 +42,7 @@
       {% endif %}
            
        <h3>Distances between <a href="http://ltr.uio.no/embeddings/registers/word/{{ word+'_'+pos }}"><i>{{word}}</i></a> meaning in particular registers and general English</h3>
-	<p><i>General English is represented by the model trained on the whole <a href="http://www.natcorp.ox.ac.uk/">British National Corpus</a> (BNC)</i></p>
+	<p><i>Based on texts from the <a href="http://www.natcorp.ox.ac.uk/">British National Corpus</a> (BNC)</i></p>
 	<p><i>Distances take values from <strong>0</strong> (the word is used in the mainstream meaning in this register) to <strong>1</strong> (the word is used in a completely different meaning compared to the language in general)</i></p>
        <canvas id="distances"></canvas>
        <script src="http://ltr.uio.no/~andreku/dist/js/html5-canvas-bar-graph.js"></script>
@@ -67,7 +73,7 @@
     {% for model in result if model != 'all' %}
         <div class="col-md-4">
         <h4><strong>{{ models[model] }}</strong></h4>
-        <p><i><a href="http://ltr.uio.no/embeddings/registers/concordance/{{ word+'_'+pos }}/{{ model }}" target="_blank">(examples of usage)</a></i></p>
+        
         <ol>
         {% for res in result[model] if not "No results" in res and res != "Incorrect tag!" and not 'is unknown' in res  %}
         <li style='margin: 10px 0;'>
@@ -84,6 +90,7 @@
         <i>{{ result[model][0] }}</i>
         
         {% endif %}
+        <p><i><a href="http://ltr.uio.no/embeddings/registers/concordance/{{ word+'_'+pos }}/{{ model }}" target="_blank">(browse examples of usage)</a></i></p>
         
         </div>
     {% endfor %}
