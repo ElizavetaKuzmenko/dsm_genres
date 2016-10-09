@@ -192,12 +192,14 @@ def genreconcordance(word, register):
             result = sentences[register]
             result2 = []
             for sentence in result:
-                position = sentence.index(word)
-                if position < 5:
-                    add = ['...'] * (5-position)
+                slemmas = ['_'.join(w.split('_')[1:]) for w in sentence]
+                position = slemmas.index(word)
+                if position < 6:
+                    add = ['...'] * (6-position)
                     sentence = add + sentence
-                    position = sentence.index(word)
-                newsentence = sentence[position-5:position+5]
+                    slemmas = ['_'.join(w.split('_')[1:]) for w in sentence]
+                    position = slemmas.index(word)
+                newsentence = sentence[position-6:position+6]
                 newsentence = ['...']+newsentence+['...']
                 result2.append(newsentence)
             return render_template('concordance.html', result=result2, word=word, register=register, models=our_models)

@@ -7,13 +7,13 @@
 {% block content %}
     <div class="row">
 	<h2>Concordance for <strong><i>{{ word }}</i></strong> in {{ models[register] }} texts</h2>
-	<p><i>10 random sentences, lemmatized</i></p>
+	<p><i>10 random sentences</i></p>
 	{% if result %}
 	<ul>
 	{% for sentence in result  %}
         
         <li>{% for token in sentence %}
-        {% if token == word%}
+        {% if token.split('_')[1:] == word.split('_') %}
         <strong>{{ token.split('_')[0] }}</strong>
         {% else %}
         {{ token.split('_')[0] }}
