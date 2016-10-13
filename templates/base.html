@@ -16,8 +16,9 @@
 
     {%- block styles %}
     <!-- Bootstrap -->
-     <link rel="stylesheet" href="http://ltr.uio.no/~andreku/dist/css/bootstrap.min.css">
+     <link rel="stylesheet" href="http://ltr.uio.no/~andreku/dist/css/bootstrap2.css">
      <link href="http://ltr.uio.no/~andreku/dist/css/avatar.css" rel="stylesheet" media="screen">
+     <link rel="stylesheet" href="http://ltr.uio.no/~andreku/dist/css/typeahead.css">
     {%- endblock styles %}
     {%- endblock head %}
   </head>
@@ -60,10 +61,13 @@
 </div>
 </div>
     {% block scripts %}
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script type="text/javascript" src="http://ltr.uio.no/~andreku/dist/js/jquery-1.12.1.min.js"></script>
     <script src="http://ltr.uio.no/~andreku/dist/js/bootstrap.min.js"></script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <script src="http://ltr.uio.no/~andreku/dist/js/ie10-viewport-bug-workaround.js"></script>
+    <script type="text/javascript" src="http://ltr.uio.no/~andreku/dist/js/typeahead/bloodhound.min.js"></script>
+    <script type="text/javascript" src="http://ltr.uio.no/~andreku/dist/js/typeahead/typeahead.bundle.min.js"></script>
+    <script type="text/javascript" src="http://ltr.uio.no/~andreku/dist/js/typeahead/hint.js"></script>
     {%- endblock scripts %}
     {%- endblock body %}
   </body>

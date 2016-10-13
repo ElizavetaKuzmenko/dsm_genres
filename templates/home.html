@@ -20,16 +20,18 @@
 	
 	<h2>Word analysis</h2>
 	<p>Type your query word (optionally with part of speech tag):</p>
-            <form method=post>
+        <div id="queryform">
+            <form id="inputform" action="#" method=post>
               <div class="form-group">
         {% if word %}
-        <input type="text" class="form-control" name="query" value="{{ word }}" maxlength=100>
+        <input type="text" class="typeahead" id="query" name="query" value="{{ word }}" maxlength=100>
         {% else %}
-        <input type="text" class="form-control" name="query" placeholder="apple_SUBST" maxlength=100>
+        <input type="text" class="typeahead" id="query" name="query" placeholder="apple_SUBST" maxlength=100>
         {% endif %}
       </div>
-      <button type="submit" class="btn btn-primary" name="query" value = "submit">Submit!</button>
+      <button type="submit" class="btn btn-primary" id="send" name="query" value = "submit">Submit!</button>
             </form>
+        </div>
     {% if error %}
         <p> {{ error }}</p>
     {% endif %}
@@ -88,9 +90,10 @@
         </ol>
         {% if 'is unknown' in result[model][0] %}
         <i>{{ result[model][0] }}</i>
-        
-        {% endif %}
+        {% else %}
         <p><i><a href="http://ltr.uio.no/embeddings/registers/concordance/{{ word+'_'+pos }}/{{ model }}" target="_blank">(browse examples of usage)</a></i></p>
+        {% endif %}
+        
         
         </div>
     {% endfor %}
