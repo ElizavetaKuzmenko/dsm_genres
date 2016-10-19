@@ -72,9 +72,15 @@
       <h3>Words related to <a href="http://ltr.uio.no/embeddings/registers/word/{{ word+'_'+pos }}"><i>{{word}}</i></a> <small>({{ pos }})</small> across different language registers</h3>
 <div class="row">
     <div class="col-md-7">
-    {% for model in result if model != 'all' %}
+    {% for model in result if model != 'all' and not 'is unknown' in result[model][0] %}
         <div class="col-md-4">
         <h4><strong>{{ models[model] }}</strong></h4>
+        {% if freq[model] > 0 %}
+        <p><small><i>Frequency: <strong>{{ freq[model] }}</strong></i></small></p>
+        {% if freq[model] < 20 %}
+        <p><small><strong>Attention: infrequent word!<br/>Results are not reliable.</strong></small></p>
+        {% endif %}
+        {% endif %}
         
         <ol>
         {% for res in result[model] if not "No results" in res and res != "Incorrect tag!" and not 'is unknown' in res  %}
@@ -88,20 +94,29 @@
         </li>
         {% endfor %}
         </ol>
-        {% if 'is unknown' in result[model][0] %}
-        <i>{{ result[model][0] }}</i>
-        {% else %}
         <p><i><a href="http://ltr.uio.no/embeddings/registers/concordance/{{ word+'_'+pos }}/{{ model }}" target="_blank">(browse examples of usage)</a></i></p>
-        {% endif %}
-        
+        </div>
+        {% endfor %}
+        {% for model in result if model != 'all' and 'is unknown' in result[model][0] %}
+        <div class="col-md-4">
+        <h4><strong>{{ models[model] }}</strong></h4>
+        <i>{{ result[model][0] }}</i>
+        </div>
+        {% endfor %}
+
         
         </div>
-    {% endfor %}
-    </div>
+
     <div class="col-md-5">
         <div style="position: relative; left:30%;">
         <big>
         <h4><strong>General English</strong></h4>
+        {% if freq['all'] > 0 %}
+        <p><small><i>Frequency: <strong>{{ freq['all'] }}</strong></i></small></p>
+        {% if freq['all'] < 20 %}
+        <p><small><strong>Attention: infrequent word!<br/>Results are not reliable.</strong></small></p>
+        {% endif %}
+        {% endif %}
         <ol>
         {% for res in result['all'] if not "No results" in res and res != "Incorrect tag!" and not 'is unknown' in res  %}
         <li>
@@ -114,8 +129,8 @@
         {% endif %}
         
         </big>
-        </div>
     </div>
+</div>
 </div>
 
 {% endif %}

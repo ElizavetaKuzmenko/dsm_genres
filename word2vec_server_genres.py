@@ -53,6 +53,36 @@ print >> sys.stderr, 'Concordance loaded from', root+'data/total_concordance.jso
 
 # Vector functions
 
+
+def find_frequency(query):
+    (q,model) = query
+    lemma = q.split('_')[0]
+    pos = q.split('_')[-1]
+    m = models_dic[model]
+    noresults = False
+    if q not in m:
+        candidates_set = set()
+        candidates_set.add(q.upper())
+        if tags:
+            candidates_set.add(lemma + '_UNKN')
+            candidates_set.add(lemma.lower() + '_' + pos)
+            candidates_set.add(lemma.capitalize() + '_' + pos)
+        else:
+            candidates_set.add(q.lower())
+            candidates_set.add(q.capitalize())
+        noresults = True
+        for candidate in candidates_set:
+            if candidate in m:
+                q = candidate
+                noresults = False
+                break
+    if noresults:
+        return 0
+    frequency = m.vocab[q].count
+    return frequency
+
+
+
 def find_synonyms(query):
     (q, posfilter) = query
     results = {}
@@ -110,7 +140,7 @@ def concordance(word):
         return {'Error': 'Word not it concordance data'}
 
 
-operations = {'1': find_synonyms, '2': classify, '3': concordance}
+operations = {'1': find_synonyms, '2': classify, '3': concordance, '4': find_frequency}
 
 # Bind socket to local host and port
 
@@ -146,7 +176,10 @@ def clientthread(conn, addr):
         output = operations[query[0]]((query[1:]))
         now = datetime.datetime.now()
         print >> sys.stderr, now.strftime("%Y-%m-%d %H:%M"), '\t', addr[0] + ':' + str(addr[1]), '\t', data
-        reply = json.dumps(output)
+        if query[0] == '4':
+            reply = str(output)
+        else:
+            reply = json.dumps(output)
         conn.sendall(reply.encode('utf-8'))
         break
 

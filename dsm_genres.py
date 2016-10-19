@@ -92,7 +92,7 @@ def serverquery(message):
         s.close()
         return None
     # Now receive data
-    reply = s.recv(32768)
+    reply = s.recv(65536)
     s.close()
     return reply
 
@@ -115,7 +115,10 @@ def genrehome():
             distances = {}
             images = {}
             images[query.split('_')[0]] = None
+            frequencies = {}
             for m in our_models:
+                fmessage = "4;" + query + ";" + m
+                frequencies[m] = int(serverquery(fmessage))
                 if m == 'all':
                     continue
                 set_1 = set([x[0] for x in associates['all']])
@@ -137,7 +140,7 @@ def genrehome():
                 if image:
                     images[w] = image
             return render_template('home.html', result=associates, word=query.split('_')[0], pos=query.split('_')[-1],
-                                   distances=distances_r, models=our_models, wordimages=images)
+                                   distances=distances_r, models=our_models, wordimages=images, freq=frequencies)
     return render_template('home.html')
 
 
@@ -157,7 +160,10 @@ def genreword(word):
         distances = {}
         images = {}
         images[query.split('_')[0]] = None
+        frequencies = {}
         for m in our_models:
+            fmessage = "4;" + query + ";" + m
+            frequencies[m] = int(serverquery(fmessage))
             if m == 'all':
                 continue
             set_1 = set([x[0] for x in associates['all']])
@@ -179,7 +185,7 @@ def genreword(word):
             if image:
                 images[w] = image
         return render_template('home.html', result=associates, word=query.split('_')[0], pos=query.split('_')[-1],
-                               distances=distances_r, models=our_models, wordimages=images)
+                               distances=distances_r, models=our_models, wordimages=images, freq=frequencies)
     return render_template('home.html')
 
 
