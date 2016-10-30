@@ -10,6 +10,7 @@ from flask import render_template, Blueprint
 from flask import request
 from sparql import getdbpediaimage
 import codecs
+from tau import robusttau
 
 config = ConfigParser.RawConfigParser()
 config.read('dsm_genres.cfg')
@@ -121,13 +122,25 @@ def genrehome():
                 frequencies[m] = int(serverquery(fmessage))
                 if m == 'all':
                     continue
-                set_1 = set([x[0] for x in associates['all']])
-                set_2 = set([x[0] for x in associates[m]])
+                set_1 = [x[0] for x in associates['all']]
+                set_2 = [x[0] for x in associates[m]]
                 for word in set_2:
                     images[word.split('_')[0]] = None
-                distance = 1 - jaccard(set_1, set_2)
+                #distance = 1 - jaccard(set_1, set_2)
+                distance = -robusttau(set_1, set_2)
                 distances[m] = round(distance, 2)
             distances_r = sorted(distances.items(), key=operator.itemgetter(1))
+            values = [x[1] for x in distances_r]
+            mindist = min(values)
+            if mindist < 0:
+        	distances_r2 = []
+        	for el in distances_r:
+        	    el0 = el[0]
+        	    el1 = el[1] + abs(mindist)
+        	    if el1 > 1:
+        		el1 = 1
+        	    distances_r2.append((el0, el1))
+    		distances_r = distances_r2
             imagecache = {}
             imagedata = codecs.open(root + cachefile, 'r', 'utf-8')
             for line in imagedata:
@@ -166,13 +179,25 @@ def genreword(word):
             frequencies[m] = int(serverquery(fmessage))
             if m == 'all':
                 continue
-            set_1 = set([x[0] for x in associates['all']])
-            set_2 = set([x[0] for x in associates[m]])
+            set_1 = [x[0] for x in associates['all']]
+            set_2 = [x[0] for x in associates[m]]
             for word in set_2:
                 images[word.split('_')[0]] = None
-            distance = 1 - jaccard(set_1, set_2)
+            #distance = 1 - jaccard(set_1, set_2)
+            distance = -robusttau(set_1, set_2)
             distances[m] = round(distance, 2)
         distances_r = sorted(distances.items(), key=operator.itemgetter(1))
+        values = [x[1] for x in distances_r]
+        mindist = min(values)
+        if mindist < 0:
+            distances_r2 = []
+            for el in distances_r:
+                el0 = el[0]
+        	el1 = el[1] + abs(mindist)
+        	if el1 > 1:
+        	    el1 = 1
+        	distances_r2.append((el0, el1))
+    	    distances_r = distances_r2
         imagecache = {}
         imagedata = codecs.open(root + cachefile, 'r', 'utf-8')
         for line in imagedata:

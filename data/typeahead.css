@@ -1,7 +1,7 @@
 .typeahead,
 .tt-query,
 .tt-hint {
-  width: 396px;
+  width: 350px;
   height: 40px;
   padding: 2px 12px;
   font-size: 20px;
@@ -12,6 +12,7 @@
           border-radius: 8px;
   outline: none;
 }
+
 
 .typeahead {
   background-color: #fff;

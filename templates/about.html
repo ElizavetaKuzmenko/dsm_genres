@@ -17,14 +17,23 @@
 <li><i>popular non-fiction language.</i></li>
 </ul>
 </p></blockquote>
-
+<p>You can search for any English word, optionally accompanied with one of the following part-of-speech tags (for example, <i>'boot_SUBST'</i>):
+<ul>
+<li>SUBST - noun</li>
+<li>ADJ - adjective</li>
+<li>VERB - verb</li>
+<li>ADV - adverb</li>
+<li>PREP - preposition</li>
+<li>UNC - unknown</li>
+</ul>
+</p>
 <p>Under the hood of this service are <strong>distributional language models</strong>. They were trained on register-specific slices of the <a href="http://www.natcorp.ox.ac.uk/">British National Corpus</a> (BNC), large and well-established collection of English texts (note: all the texts are older than 1994, so don't try to look for 21st century memes!). Each model corresponds to one register (or the whole BNC), so by comparing word embeddings in different models we compare different registers. You can read about the BNC registers in more detail in the paper by David Lee (see References below).</p>
 <blockquote><p>Distributional models use word co-occurrences data extracted from large corpora to represent semantics of each particular word with dense vectors called <strong>word embeddings</strong>. Words with similar meaning possess similar vectors. This allows to computationally process natural language taking semantics into account.
 We use the well-known <a href="https://en.wikipedia.org/wiki/Word2vec#Skip_grams_and_CBOW">Continuous Bag of Words</a> algorithm developed by Mikolov et al. to train our models.</p>
 </blockquote>
 <p>The resulting models demonstrate semantic specificity of different registers. It can be observed through comparing the lists of nearest semantic associates for a given word in different models.
 You can look for the nearest associates of any word and grasp what this word means in a particular register. For example, the word <i>star</i> means very  different things in a typical newspaper article and in an academic paper.</p>
-<p>Additionally, differences between the associates in different models can be expressed quantitatively. <i>RegisterExplorer</i> will calculate Jaccard distance between all the registers and the model trained on the whole BNC, so that you know in which register the meaning of your query word is most 'exotic'.</p> </p>
+<p>Additionally, differences between the associates in different models can be expressed quantitatively. <i>RegisterExplorer</i> will calculate the normalized <a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.kendalltau.html">Kendall's Tau distance</a> between all the registers and the model trained on the whole BNC, so that you know in which register the meaning of your query word is most 'exotic'.</p> </p>
 <p>In the <a href="http://ltr.uio.no/embeddings/registers/text">Text analysis</a> tab you can paste your text and find out how likely it is that it was produced within one of the aforementioned registers. For this, we employ the approach called 'deep inverse regression' developed by Matt Taddy. It analyses word sequences and outputs log-likelihood of encountering such sequences in the given models. Thus, one can estimate how strong is the 'expression' of each register in the query text.</p>
 
 <h2>Models</h2>
