@@ -1,4 +1,4 @@
-#!/ltg/python/bin/python2.7
+#!/usr/bin/python2
 # coding: utf-8
 
 from scipy.stats import kendalltau

@@ -1,4 +1,4 @@
-#!/ltg/python/bin/python2.7
+#!/usr/bin/python2
 # coding: utf-8
 
 import ConfigParser
@@ -46,13 +46,13 @@ for mod in our_models:
 
 # Loading concordance data
 
-data = gzip.open(root+'data/total_concordance.json.gz','r')
+concordance = config.get('Other', 'concordance')
+data = gzip.open(root+concordance,'r')
 concordance_data = json.loads(data.read())
 data.close()
-print >> sys.stderr, 'Concordance loaded from', root+'data/total_concordance.json.gz'
+print >> sys.stderr, 'Concordance loaded from', root+concordance
 
 # Vector functions
-
 
 def find_frequency(query):
     (q,model) = query

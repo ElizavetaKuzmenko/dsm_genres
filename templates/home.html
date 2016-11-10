@@ -43,11 +43,11 @@
 </div>
       {% endif %}
            
-       <h3>Distances between <a href="http://ltr.uio.no/embeddings/registers/word/{{ word+'_'+pos }}"><i>{{word}}</i></a> meaning in particular registers and general English</h3>
+       <h3>Distances between <a href="/embeddings/registers/word/{{ word+'_'+pos }}"><i>{{word}}</i></a> meaning in particular registers and general English</h3>
 	<p><i>Based on texts from the <a href="http://www.natcorp.ox.ac.uk/">British National Corpus</a> (BNC)</i></p>
 	<p><i>Distances take values from <strong>0</strong> (the word is used in the mainstream meaning in this register) to <strong>1</strong> (the word is used in a completely different meaning compared to the language in general)</i></p>
        <canvas id="distances"></canvas>
-       <script src="http://ltr.uio.no/~andreku/dist/js/html5-canvas-bar-graph.js"></script>
+       <script src="/data/html5-canvas-bar-graph.js"></script>
        <script>
        var ctx = document.getElementById("distances").getContext("2d");
        var graph = new BarGraph(ctx);
@@ -69,7 +69,7 @@
        </script>
          {% endif %}
 
-      <h3>Words related to <a href="http://ltr.uio.no/embeddings/registers/word/{{ word+'_'+pos }}"><i>{{word}}</i></a> <small>({{ pos }})</small> across different language registers</h3>
+      <h3>Words related to <a href="/embeddings/registers/word/{{ word+'_'+pos }}"><i>{{word}}</i></a> <small>({{ pos }})</small> across different language registers</h3>
 <div class="row">
     <div class="col-md-7">
     {% for model in result if model != 'all' and not 'is unknown' in result[model][0] %}
@@ -85,7 +85,7 @@
         <ol>
         {% for res in result[model] if not "No results" in res and res != "Incorrect tag!" and not 'is unknown' in res  %}
         <li style='margin: 10px 0;'>
-        <big><a href="http://ltr.uio.no/embeddings/registers/word/{{ res[0] }}">{{ res[0].split('_')[0] }}</a></big>
+        <big><a href="/embeddings/registers/word/{{ res[0] }}">{{ res[0].split('_')[0] }}</a></big>
         {% if wordimages[res[0].split('_')[0]]  %}
 	    <div class="avataricon">
 		<a href="https://en.wikipedia.org/wiki/{{ res[0].split('_')[0] }}" target="_blank"><img src = '{{ wordimages[res[0].split('_')[0]] }}' alt = "{{res[0].split('_')[0]|capitalize }} in Wikipedia" title = "{{ res[0].split('_')[0]|capitalize }} in Wikipedia" width="30"></a>
@@ -94,7 +94,7 @@
         </li>
         {% endfor %}
         </ol>
-        <p><i><a href="http://ltr.uio.no/embeddings/registers/concordance/{{ word+'_'+pos }}/{{ model }}" target="_blank">(browse examples of usage)</a></i></p>
+        <p><i><a href="/embeddings/registers/concordance/{{ word+'_'+pos }}/{{ model }}" target="_blank">(browse examples of usage)</a></i></p>
         </div>
         {% endfor %}
         {% for model in result if model != 'all' and 'is unknown' in result[model][0] %}
@@ -120,7 +120,7 @@
         <ol>
         {% for res in result['all'] if not "No results" in res and res != "Incorrect tag!" and not 'is unknown' in res  %}
         <li>
-        <strong><a href="http://ltr.uio.no/embeddings/registers/word/{{ res[0] }}">{{ res[0].split('_')[0] }}</a></strong>
+        <strong><a href="/embeddings/registers/word/{{ res[0] }}">{{ res[0].split('_')[0] }}</a></strong>
         </li>
         {% endfor %}
         </ol>
@@ -134,6 +134,4 @@
 </div>
 
 {% endif %}
-        
-     
 {% endblock %}

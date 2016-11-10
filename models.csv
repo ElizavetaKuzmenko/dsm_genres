@@ -1,6 +1,3 @@
-all	Whole BNC	BNC/genres/bnc_all_win3.model	True
-academic	Academic	BNC/genres/bnc_academic_win3.model	False
-fiction	Fiction	BNC/genres/bnc_fiction_win3.model	False
-news	News	BNC/genres/bnc_news_win3.model	False
-nonAcademic	Non-fiction	BNC/genres/bnc_nonAcademic_win3.model	False
-spoken	Spoken	BNC/genres/bnc_spoken_win3.model	False
+all	Whole BNC	models/bnc_all_win3.model	True
+academic	Academic	models/bnc_academic_win3.model	False
+news	News	models/bnc_news_win3.model	False

@@ -33,7 +33,7 @@
       <p><i>Ranked by decreasing probability, normalized</i></p>
     
     <canvas id="distances"></canvas>
-    <script src="http://ltr.uio.no/~andreku/dist/js/html5-canvas-bar-graph.js"></script>
+    <script src="/data/html5-canvas-bar-graph.js"></script>
     <script>
         var ctx = document.getElementById("distances").getContext("2d");
         var graph = new BarGraph(ctx);
@@ -71,7 +71,7 @@
     <p><i>only content words are shown, {{ text|wordcount }} words in total</i></p>
     {% for sentence in lemmas %}
     {% for lemma in sentence if lemma.split('_')[-1] in tags %}
-    <a href="http://ltr.uio.no/embeddings/registers/word/{{ lemma }}" title="Explore {{ lemma }} across registers" alt="Explore {{ lemma }} across registers">{{ lemma }}</a>
+    <a href="/embeddings/registers/word/{{ lemma }}" title="Explore {{ lemma }} across registers" alt="Explore {{ lemma }} across registers">{{ lemma }}</a>
     {% endfor %}
     <br/>
     {% endfor %}

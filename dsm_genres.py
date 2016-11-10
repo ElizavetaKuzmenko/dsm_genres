@@ -1,4 +1,4 @@
-#!/ltg/python/bin/python2.7
+#!/usr/bin/python2
 # coding: utf-8
 import ConfigParser
 import json
@@ -9,15 +9,17 @@ import sys
 from flask import render_template, Blueprint
 from flask import request
 from sparql import getdbpediaimage
+from flask import send_from_directory
 import codecs
 from tau import robusttau
 
 config = ConfigParser.RawConfigParser()
 config.read('dsm_genres.cfg')
 
-root = '/home/andreku/www/RegisterExplorer/'
-modelsfile = 'models.csv'
+root = config.get('Files and directories', 'root')
+modelsfile = config.get('Files and directories', 'models')
 our_models = {}
+
 for line in open(root + modelsfile, 'r').readlines():
     if line.startswith("#"):
         continue
@@ -27,8 +29,11 @@ for line in open(root + modelsfile, 'r').readlines():
 
 logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
 
-tags = True
-lemmatize = True
+url = config.get('Other', 'url')
+
+tags = config.getboolean('Tags', 'use_tags')
+
+lemmatize = config.getboolean('Other', 'lemmatize')
 if lemmatize:
     from tagger import tagword
 
@@ -42,7 +47,6 @@ except socket.gaierror:
     print >> sys.stderr, 'Hostname could not be resolved. Exiting'
     sys.exit()
 
-default_tag = 'SUBST'
 taglist = set(config.get('Tags', 'tags_list').split())
 defaulttag = config.get('Tags', 'default_tag')
 cachefile = config.get('Files and directories', 'image_cache')
@@ -98,7 +102,7 @@ def serverquery(message):
     return reply
 
 
-@genre.route('/embeddings/registers/', methods=['GET', 'POST'])
+@genre.route(url, methods=['GET', 'POST'])
 def genrehome():
     if request.method == 'POST':
         try:
@@ -126,7 +130,6 @@ def genrehome():
                 set_2 = [x[0] for x in associates[m]]
                 for word in set_2:
                     images[word.split('_')[0]] = None
-                #distance = 1 - jaccard(set_1, set_2)
                 distance = -robusttau(set_1, set_2)
                 distances[m] = round(distance, 2)
             distances_r = sorted(distances.items(), key=operator.itemgetter(1))
@@ -157,7 +160,7 @@ def genrehome():
     return render_template('home.html')
 
 
-@genre.route('/embeddings/registers/word/<word>/', methods=['GET', 'POST'])
+@genre.route(url+'word/<word>/', methods=['GET', 'POST'])
 def genreword(word):
     input_data = word
     if request.method == 'POST':
@@ -183,7 +186,6 @@ def genreword(word):
             set_2 = [x[0] for x in associates[m]]
             for word in set_2:
                 images[word.split('_')[0]] = None
-            #distance = 1 - jaccard(set_1, set_2)
             distance = -robusttau(set_1, set_2)
             distances[m] = round(distance, 2)
         distances_r = sorted(distances.items(), key=operator.itemgetter(1))
@@ -214,7 +216,7 @@ def genreword(word):
     return render_template('home.html')
 
 
-@genre.route('/embeddings/registers/concordance/<word>/<register>/', methods=['GET'])
+@genre.route(url+'concordance/<word>/<register>/', methods=['GET'])
 def genreconcordance(word, register):
     if word.replace('_', '').replace('-', '').isalnum():
         message = "3;" + word.strip().encode('utf-8')
@@ -240,7 +242,7 @@ def genreconcordance(word, register):
 
 
 
-@genre.route('/embeddings/registers/text/', methods=['GET', 'POST'])
+@genre.route(url+'text/', methods=['GET', 'POST'])
 def genretext():
     if request.method == 'POST':
         try:
@@ -261,6 +263,6 @@ def genretext():
     return render_template('text.html')
 
 
-@genre.route('/embeddings/registers/about/', methods=['GET'])
+@genre.route(url+'about/', methods=['GET'])
 def genreabout():
     return render_template('about.html')

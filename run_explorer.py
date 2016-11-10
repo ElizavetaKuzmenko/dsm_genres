@@ -1,7 +1,11 @@
-from flask import Flask, url_for
+from flask import Flask, url_for, send_from_directory
 from dsm_genres import *
 
-app_explorer = Flask(__name__)
+app_explorer = Flask(__name__,static_url_path='/data/')
+
+@app_explorer.route('/data/<path:path>')
+def send_js(path):
+    return send_from_directory('data', path)
 
 app_explorer.register_blueprint(genre)
 
