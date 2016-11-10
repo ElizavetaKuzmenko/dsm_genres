@@ -1,4 +1,4 @@
-# dsm_genres
+# Register Explorer
 Language registers explorer powered by word embeddings.
 
 This is the framework behind the web service http://ltr.uio.no/embeddings/registers/ accompanying the following paper:
