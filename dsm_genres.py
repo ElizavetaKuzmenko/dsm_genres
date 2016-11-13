@@ -84,7 +84,7 @@ def serverquery(message):
         return None
 
     # Connect to remote server
-    s.connect((remote_ip, 15666))
+    s.connect((remote_ip, port))
     # Now receive data
     s.recv(1024)
 
