@@ -6,6 +6,9 @@ from scipy.stats import kendalltau
 
 def robusttau(a, b):
     lexicon = set(a+b)
+    intersection = set(a) & set(b)
+    if len(intersection) == 0:
+        return -1
     ranking_a = []
     ranking_b = []
     for word in lexicon:
