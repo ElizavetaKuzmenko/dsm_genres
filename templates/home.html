@@ -12,75 +12,86 @@
       
 
 {% block content %}
-    <div class="row">
-        {% if not result %}
-        <h1>English language registers explorer</h1>
-          <p class="lead">powered by word embeddings</p>
-	{% endif %}
+  <div class="row">
+    {% if not result %}
+      <h1>English language registers explorer</h1>
+      <p class="lead">powered by word embeddings</p>
+	  {% endif %}
 	
 	<h2>Word analysis</h2>
 	<p>Type your query word (optionally with part of speech tag):</p>
-        <div id="queryform">
-            <form id="inputform" action="#" method=post>
-              <div class="form-group">
-        {% if word %}
-        <input type="text" class="typeahead" id="query" name="query" value="{{ word }}" maxlength=100>
-        {% else %}
-        <input type="text" class="typeahead" id="query" name="query" placeholder="apple_SUBST" maxlength=100>
-        {% endif %}
-      </div>
-      <button type="submit" class="btn btn-primary" id="send" name="query" value = "submit">Submit!</button>
-            </form>
+    <div id="queryform">
+      <form id="inputform" action="#" method=post>
+        <div class="form-group">
+          {% if word %}
+          <input type="text" class="typeahead" id="query" name="query" value="{{ word }}" maxlength=100>
+          {% else %}
+          <input type="text" class="typeahead" id="query" name="query" placeholder="apple_SUBST" maxlength=100>
+          {% endif %}
         </div>
+        <button type="submit" class="btn btn-primary" id="send" name="query" value = "submit">Submit!</button>
+      </form>
+    </div>
     {% if error %}
-        <p> {{ error }}</p>
+      <p> {{ error }}</p>
     {% endif %}
-     {% if result %}
-               {% if distances %}
-     {% if wordimages[word]  %}
-<div class="avatar">
-    <a href="https://en.wikipedia.org/wiki/{{ word }}" target="_blank"><img align="right" src = '{{ wordimages[word] }}' alt = "{{word }} in Wikipedia" title = "{{word }} in Wikipedia" width="150"></a>
-</div>
-      {% endif %}
-           
-       <h3>Distances between <a href="/embeddings/registers/word/{{ word+'_'+pos }}"><i>{{word}}</i></a> meaning in particular registers and general English</h3>
-	<p><i>Based on texts from the <a href="http://www.natcorp.ox.ac.uk/">British National Corpus</a> (BNC)</i></p>
-	<p><i>Distances take values from <strong>0</strong> (the word is used in the mainstream meaning in this register) to <strong>1</strong> (the word is used in a completely different meaning compared to the language in general)</i></p>
-       <canvas id="distances"></canvas>
-       <script src="/data/html5-canvas-bar-graph.js"></script>
-       <script>
-       var ctx = document.getElementById("distances").getContext("2d");
-       var graph = new BarGraph(ctx);
-       graph.maxValue=1;
-       graph.colors=["red","green","yellow","blue","cyan"];
-       graph.margin = 4;
-       graph.width = 450;
-       graph.height = 150;
-       graph.xAxisLabelArr = [
-       {% for el in distances%}
-       "{{ models[el[0]] }}",
-       {% endfor %}
-       ];
-       graph.update([
-       {% for el in distances%}
-       {{ el[1] }},
-       {% endfor %}
-       ]);
-       </script>
-         {% endif %}
 
+      {% if result %}
+        {% if distances %}
+          <h3>Distances between <a href="/embeddings/registers/word/{{ word+'_'+pos }}"><i>{{word}}</i></a> meaning in particular registers and general English</h3> 
+
+            <div class="col-md-6">  
+              <p><i>Based on texts from the <a href="http://www.natcorp.ox.ac.uk/">British National Corpus</a> (BNC)</i></p>
+              <p><i>Distances take values from <strong>0</strong> (the word is used in the mainstream meaning in this register) to <strong>1</strong> (the word is used in a completely different meaning compared to the language in general)</i></p>
+                   <canvas id="distances"></canvas>
+                   <script src="/data/html5-canvas-bar-graph.js"></script>
+                   <script>
+                   var ctx = document.getElementById("distances").getContext("2d");
+                   var graph = new BarGraph(ctx);
+                   graph.maxValue=1;
+                   graph.colors=["red","green","yellow","blue","cyan"];
+                   graph.margin = 4;
+                   graph.width = 450;
+                   graph.height = 150;
+                   graph.xAxisLabelArr = [
+                   {% for el in distances%}
+                   "{{ models[el[0]] }}",
+                   {% endfor %}
+                   ];
+                   graph.update([
+                   {% for el in distances%}
+                   {{ el[1] }},
+                   {% endfor %}
+                   ]);
+                   </script>
+            </div>
+
+            <div class="col-md-6">  
+              <p><i>The graph of distances between all registers.</i></p>
+              <img id="myImg" src="{{image_path}}" alt="Graph of distances between registers" width="500" height="200">
+              <div id="myModal" class="modal">
+                <span class="close" onclick="document.getElementById('myModal').style.display='none'">&times;</span>
+                <img class="modal-content" id="img01">
+                <div id="caption"></div>
+              </div>  
+            </div>   
+
+         {% endif %}
+        </div>
+
+    <div style="clear:left;">
       <h3>Words related to <a href="/embeddings/registers/word/{{ word+'_'+pos }}"><i>{{word}}</i></a> <small>({{ pos }})</small> across different language registers</h3>
-<div class="row">
-    <div class="col-md-7">
-    {% for model in result if model != 'all' and not 'is unknown' in result[model][0] %}
-        <div class="col-md-4">
-        <h4><strong>{{ models[model] }}</strong></h4>
-        {% if freq[model] > 0 %}
-        <p><small><i>Frequency: <strong>{{ freq[model] }}</strong></i></small></p>
-        {% if freq[model] < 20 %}
-        <p><small><strong>Attention: infrequent word!<br/>Results are not reliable.</strong></small></p>
-        {% endif %}
-        {% endif %}
+      <div class="row">
+        <div class="col-md-7">
+          {% for model in result if model != 'all' and not 'is unknown' in result[model][0] %}
+            <div class="col-md-4">
+              <h4><strong>{{ models[model] }}</strong></h4>
+              {% if freq[model] > 0 %}
+                <p><small><i>Frequency: <strong>{{ freq[model] }}</strong></i></small></p>
+              {% if freq[model] < 20 %}
+                <p><small><strong>Attention: infrequent word!<br/>Results are not reliable.</strong></small></p>
+              {% endif %}
+              {% endif %}
         
         <ol>
         {% for res in result[model] if not "No results" in res and res != "Incorrect tag!" and not 'is unknown' in res  %}

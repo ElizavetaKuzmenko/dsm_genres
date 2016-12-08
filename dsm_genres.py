@@ -1,17 +1,19 @@
 #!/usr/bin/python2
 # coding: utf-8
-import ConfigParser
+import sys
 import json
+import socket
+import codecs
 import logging
 import operator
-import socket
-import sys
+import ConfigParser
 from flask import render_template, Blueprint
 from flask import request
 from sparql import getdbpediaimage
 from flask import send_from_directory
-import codecs
 from tau import robusttau
+from plots import distance_graph
+from itertools import combinations
 
 config = ConfigParser.RawConfigParser()
 config.read('dsm_genres.cfg')
@@ -126,24 +128,28 @@ def genrehome():
                 frequencies[m] = int(serverquery(fmessage))
                 if m == 'all':
                     continue
-                set_1 = [x[0] for x in associates['all']]
                 set_2 = [x[0] for x in associates[m]]
                 for word in set_2:
                     images[word.split('_')[0]] = None
+            for m1, m2, in combinations(list(our_models.keys()), 2):
+                set_1 = [x[0] for x in associates[m1]]
+                set_2 = [x[0] for x in associates[m2]]
                 distance = -robusttau(set_1, set_2)
-                distances[m] = round(distance, 2)
+                distances[(m1, m2)] = round(distance, 2)
             distances_r = sorted(distances.items(), key=operator.itemgetter(1))
             values = [x[1] for x in distances_r]
             mindist = min(values)
             if mindist < 0:
-        	distances_r2 = []
-        	for el in distances_r:
-        	    el0 = el[0]
-        	    el1 = el[1] + abs(mindist)
-        	    if el1 > 1:
-        		el1 = 1
-        	    distances_r2.append((el0, el1))
-    		distances_r = distances_r2
+                distances_r2 = []
+                for el in distances_r:
+                    el0 = el[0]
+                    el1 = el[1] + abs(mindist)
+                    if el1 > 1:
+                        el1 = 1
+                    distances_r2.append((el0, el1))
+                distances_r = distances_r2
+            image_path = distance_graph(root, query, distances_r)
+            distances_r = [d for d in distances_r if 'all' in d[0]]
             imagecache = {}
             imagedata = codecs.open(root + cachefile, 'r', 'utf-8')
             for line in imagedata:
@@ -156,7 +162,8 @@ def genrehome():
                 if image:
                     images[w] = image
             return render_template('home.html', result=associates, word=query.split('_')[0], pos=query.split('_')[-1],
-                                   distances=distances_r, models=our_models, wordimages=images, freq=frequencies)
+                                   distances=distances_r, models=our_models, wordimages=images, freq=frequencies, 
+                                   image_path=image_path)
     return render_template('home.html')
 
 
@@ -182,12 +189,14 @@ def genreword(word):
             frequencies[m] = int(serverquery(fmessage))
             if m == 'all':
                 continue
-            set_1 = [x[0] for x in associates['all']]
             set_2 = [x[0] for x in associates[m]]
             for word in set_2:
                 images[word.split('_')[0]] = None
+        for m1, m2, in combinations(list(our_models.keys()), 2):
+            set_1 = [x[0] for x in associates[m1]]
+            set_2 = [x[0] for x in associates[m2]]
             distance = -robusttau(set_1, set_2)
-            distances[m] = round(distance, 2)
+            distances[(m1, m2)] = round(distance, 2)
         distances_r = sorted(distances.items(), key=operator.itemgetter(1))
         values = [x[1] for x in distances_r]
         mindist = min(values)
@@ -195,11 +204,13 @@ def genreword(word):
             distances_r2 = []
             for el in distances_r:
                 el0 = el[0]
-        	el1 = el[1] + abs(mindist)
-        	if el1 > 1:
-        	    el1 = 1
-        	distances_r2.append((el0, el1))
-    	    distances_r = distances_r2
+                el1 = el[1] + abs(mindist)
+                if el1 > 1:
+                    el1 = 1
+                distances_r2.append((el0, el1))
+            distances_r = distances_r2
+        image_path = distance_graph(root, query, distances_r)
+        distances_r = [d for d in distances_r if 'all' in d[0]]
         imagecache = {}
         imagedata = codecs.open(root + cachefile, 'r', 'utf-8')
         for line in imagedata:
@@ -212,7 +223,8 @@ def genreword(word):
             if image:
                 images[w] = image
         return render_template('home.html', result=associates, word=query.split('_')[0], pos=query.split('_')[-1],
-                               distances=distances_r, models=our_models, wordimages=images, freq=frequencies)
+                               distances=distances_r, models=our_models, wordimages=images, freq=frequencies,
+                               image_path=image_path)
     return render_template('home.html')
 
 
