@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import sys
 
 def distance_graph(root, query, distances, nodes): 
+    ok = True
     plotFile = "%s.png" % (query)
     nodes = [el for el in nodes if el != 'all']
     if not plotFile in os.listdir(root + 'data/distance_graphs/'):
