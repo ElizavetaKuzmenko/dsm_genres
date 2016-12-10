@@ -16,9 +16,11 @@
 
     {%- block styles %}
     <!-- Bootstrap -->
-     <link rel="stylesheet" href="/data/bootstrap2.css">
-     <link href="/data/avatar.css" rel="stylesheet" media="screen">
-     <link rel="stylesheet" href="/data/typeahead.css">
+     <link rel="stylesheet" href="data/bootstrap2.css">
+     <link href="data/avatar.css" rel="stylesheet" media="screen">
+     <link rel="stylesheet" href="data/typeahead.css">
+     <link rel="stylesheet" type="text/css" href="data/fancybox/source/jquery.fancybox.css?v=2.1.5" media="screen" />
+     <link rel="stylesheet" type="text/css" href="data/fancybox/source/helpers/jquery.fancybox-buttons.css?v=1.0.5" />
     {%- endblock styles %}
     {%- endblock head %}
   </head>
@@ -39,9 +41,9 @@
 </div>
 <div id="navbar" class="collapse navbar-collapse">
 <ul class="nav navbar-nav">
-    <li><a href="/embeddings/registers/">Word analysis</a></li>
-    <li><a href="/embeddings/registers/text">Text analysis</a></li>
-    <li><a href="/embeddings/registers/about">About</a></li>
+    <li><a href="{{ url }}">Word analysis</a></li>
+    <li><a href="{{ url }}text">Text analysis</a></li>
+    <li><a href="{{ url }}about">About</a></li>
 </ul>
  </div>
   <!--/.nav-collapse -->
@@ -61,14 +63,16 @@
 </div>
 </div>
     {% block scripts %}
-    <script type="text/javascript" src="/data/jquery-1.12.1.min.js"></script>
-    <script type="text/javascript" src="/data/custom.js"></script>
+    <script type="text/javascript" src="data/jquery-1.12.1.min.js"></script>
+    <script type="text/javascript" src="data/custom.js"></script>
     <script src="/data/bootstrap.min.js"></script>
+    <script type="text/javascript" src="data/fancybox/source/jquery.fancybox.js?v=2.1.5"></script>
+    <script type="text/javascript" src="data/fancybox/source/helpers/jquery.fancybox-buttons.js?v=1.0.5"></script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <script src="/data/ie10-viewport-bug-workaround.js"></script>
-    <script type="text/javascript" src="/data/typeahead/bloodhound.min.js"></script>
-    <script type="text/javascript" src="/data/typeahead/typeahead.bundle.min.js"></script>
-    <script type="text/javascript" src="/data/typeahead/hint.js"></script>
+    <script type="text/javascript" src="data/typeahead/bloodhound.min.js"></script>
+    <script type="text/javascript" src="data/typeahead/typeahead.bundle.min.js"></script>
+    <script type="text/javascript" src="data/typeahead/hint.js"></script>
     {%- endblock scripts %}
     {%- endblock body %}
   </body>
@@ -76,4 +80,3 @@
 
 </html>
 {% endblock doc -%}
-

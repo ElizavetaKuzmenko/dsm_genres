@@ -68,12 +68,7 @@
 
             <div class="col-md-6">  
               <p><i>The graph of distances between all registers.</i></p>
-              <img id="myImg" src="{{image_path}}" alt="Graph of distances between registers" width="500" height="200">
-              <div id="myModal" class="modal">
-                <span class="close" onclick="document.getElementById('myModal').style.display='none'">&times;</span>
-                <img class="modal-content" id="img01">
-                <div id="caption"></div>
-              </div>  
+              <a class="fancybox" href="{{image_path}}" data-fancybox-group="gallery" title="Graph of distances between registers"><img src="{{image_path}}" width="500" height="200" alt="" /></a>  
             </div>   
 
          {% endif %}
