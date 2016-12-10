@@ -1,8 +1,9 @@
 import os
-import matplotlib
+import numpy as np
 import networkx as nx
-import matplotlib.pyplot as plt
+import matplotlib
 matplotlib.use('Agg')
+import matplotlib.pyplot as plt
 
 def distance_graph(root, query, distances, nodes): 
     ok = True
