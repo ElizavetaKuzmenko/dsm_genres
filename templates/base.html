@@ -16,11 +16,10 @@
 
     {%- block styles %}
     <!-- Bootstrap -->
-     <link rel="stylesheet" href="data/bootstrap2.css">
-     <link href="data/avatar.css" rel="stylesheet" media="screen">
-     <link rel="stylesheet" href="data/typeahead.css">
-     <link rel="stylesheet" type="text/css" href="data/fancybox/source/jquery.fancybox.css?v=2.1.5" media="screen" />
-     <link rel="stylesheet" type="text/css" href="data/fancybox/source/helpers/jquery.fancybox-buttons.css?v=1.0.5" />
+     <link rel="stylesheet" href="{{ url }}data/bootstrap2.css">
+     <link href="{{ url }}data/avatar.css" rel="stylesheet" media="screen">
+     <link rel="stylesheet" href="{{ url }}data/typeahead.css">
+     <link rel="stylesheet" type="text/css" href="{{ url }}data/fancybox/jquery.fancybox.css" media="screen" />
     {%- endblock styles %}
     {%- endblock head %}
   </head>
@@ -37,7 +36,7 @@
 	<span class="icon-bar"></span>
 	<span class="icon-bar"></span>
      </button>
-    <a class="navbar-brand" href="/embeddings/registers">RegisterExplorer</a>
+    <a class="navbar-brand" href="{{ url }}">RegisterExplorer</a>
 </div>
 <div id="navbar" class="collapse navbar-collapse">
 <ul class="nav navbar-nav">
@@ -63,16 +62,15 @@
 </div>
 </div>
     {% block scripts %}
-    <script type="text/javascript" src="data/jquery-1.12.1.min.js"></script>
-    <script type="text/javascript" src="data/custom.js"></script>
-    <script src="/data/bootstrap.min.js"></script>
-    <script type="text/javascript" src="data/fancybox/source/jquery.fancybox.js?v=2.1.5"></script>
-    <script type="text/javascript" src="data/fancybox/source/helpers/jquery.fancybox-buttons.js?v=1.0.5"></script>
+    <script type="text/javascript" src="{{ url }}data/jquery-1.12.1.min.js"></script>
+    <script type="text/javascript" src="{{ url }}data/custom.js"></script>
+    <script src="{{ url }}data/bootstrap.min.js"></script>
+    <script type="text/javascript" src="{{ url }}data/fancybox/jquery.fancybox.js"></script>
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <script src="/data/ie10-viewport-bug-workaround.js"></script>
-    <script type="text/javascript" src="data/typeahead/bloodhound.min.js"></script>
-    <script type="text/javascript" src="data/typeahead/typeahead.bundle.min.js"></script>
-    <script type="text/javascript" src="data/typeahead/hint.js"></script>
+    <script src="{{ url }}data/ie10-viewport-bug-workaround.js"></script>
+    <script type="text/javascript" src="{{ url }}data/typeahead/bloodhound.min.js"></script>
+    <script type="text/javascript" src="{{ url }}data/typeahead/typeahead.bundle.min.js"></script>
+    <script type="text/javascript" src="{{ url }}data/hint.js"></script>
     {%- endblock scripts %}
     {%- endblock body %}
   </body>
@@ -80,3 +78,4 @@
 
 </html>
 {% endblock doc -%}
+

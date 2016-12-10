@@ -44,7 +44,7 @@
               <p><i>Based on texts from the <a href="http://www.natcorp.ox.ac.uk/">British National Corpus</a> (BNC)</i></p>
               <p><i>Distances take values from <strong>0</strong> (the word is used in the mainstream meaning in this register) to <strong>1</strong> (the word is used in a completely different meaning compared to the language in general)</i></p>
                    <canvas id="distances"></canvas>
-                   <script src="/data/html5-canvas-bar-graph.js"></script>
+                   <script src="{{ url }}data/html5-canvas-bar-graph.js"></script>
                    <script>
                    var ctx = document.getElementById("distances").getContext("2d");
                    var graph = new BarGraph(ctx);
@@ -54,21 +54,24 @@
                    graph.width = 450;
                    graph.height = 150;
                    graph.xAxisLabelArr = [
-                   {% for el in distances%}
-                   "{{ models[el[0]] }}",
+                   {% for el in distances %}
+                   "{{ models[el[0][1]] }}",
                    {% endfor %}
                    ];
                    graph.update([
-                   {% for el in distances%}
+                   {% for el in distances %}
                    {{ el[1] }},
                    {% endfor %}
                    ]);
                    </script>
             </div>
 
-            <div class="col-md-6">  
-              <p><i>The graph of distances between all registers.</i></p>
-              <a class="fancybox" href="{{image_path}}" data-fancybox-group="gallery" title="Graph of distances between registers"><img src="{{image_path}}" width="500" height="200" alt="" /></a>  
+            <div class="col-md-6">
+             {% if 'error.png' in image_path %}
+             <a class="fancybox" href="{{ url }}{{image_path}}" data-fancybox-group="gallery" title="Impossible to visualize: rare or unknown word"><img src="{{ url }}{{image_path}}" title='Impossible to visualize: rare or unknown word' width="200" alt="Impossible to visualize: rare or unknown word" /></a>
+             {% else %}
+             <a class="fancybox" href="{{ url }}{{image_path}}" data-fancybox-group="gallery" title="Relations between registers"><img src="{{ url }}{{image_path}}" title='Relations between all registers' width="300" alt="" /></a>
+    	    {% endif %}
             </div>   
 
          {% endif %}
