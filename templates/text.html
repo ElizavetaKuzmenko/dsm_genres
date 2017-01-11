@@ -33,7 +33,7 @@
       <p><i>Ranked by decreasing probability, normalized</i></p>
     
     <canvas id="distances"></canvas>
-    <script src="/data/html5-canvas-bar-graph.js"></script>
+    <script src="{{ url }}data/html5-canvas-bar-graph.js"></script>
     <script>
         var ctx = document.getElementById("distances").getContext("2d");
         var graph = new BarGraph(ctx);
