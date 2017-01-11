@@ -78,7 +78,7 @@ def find_frequency(query):
                 break
     if noresults:
         return 0
-    frequency = m.vocab[q].count
+    frequency = m.wv.vocab[q].count
     return frequency
 
 
