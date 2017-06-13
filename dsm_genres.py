@@ -159,7 +159,7 @@ def genrehome():
             imagedata.close()
             for w in images:
                 image = getdbpediaimage(w.encode('utf-8'), imagecache)
-                if image:
+                if image and image != 'None':
                     images[w] = image
             return render_template('home.html', result=associates, word=query.split('_')[0], pos=query.split('_')[-1],
                                    distances=distances_r, models=our_models, wordimages=images, freq=frequencies, 
@@ -220,7 +220,7 @@ def genreword(word):
         imagedata.close()
         for w in images:
             image = getdbpediaimage(w.encode('utf-8'), imagecache)
-            if image:
+            if image and image != 'None':
                 images[w] = image
         return render_template('home.html', result=associates, word=query.split('_')[0], pos=query.split('_')[-1],
                                distances=distances_r, models=our_models, wordimages=images, freq=frequencies,
